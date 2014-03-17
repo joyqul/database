@@ -10,5 +10,6 @@
     <h1>Welcome!</h1>
     <p>This is the index page for this server.</p>
     <p>And it is for the database class in 2014.</p>
+    <p> ^_^ </p>
 </body>
 </html>
