@@ -19,10 +19,13 @@ def server_static(session):
     return template('signin', title="Sign In For Flight Time Table", text="")
 
 @route('/flight/signin', method='POST')
-def do_signin():
+def do_signin(session):
     user_email = request.forms.get('email')
     passwd = request.forms.get('passwd')
     if check_signin(user_email, passwd):
+        cursor.execute("select `is_admin` from `user` where `account`= %s", (user_email)) 
+        is_admin = (cursor.fetchall())[0][0]
+        session['is_admin'] = is_admin
         redirect('/database/flight/timetable')
     else:
         return "<p> Sign in failed. </p>"
@@ -42,9 +45,9 @@ def server_static():
 
 @route('/flight/timetable')
 def index(session):
-    user_name = session.get('name')
-    if user_name is not None:
-        return "Hello, %s"%user_name
+    is_admin = session.get('is_admin')
+    if is_admin == True:
+        return "Hello", is_admin
     else:
         return "QQ"
 
