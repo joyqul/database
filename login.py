@@ -2,6 +2,7 @@ import bottle
 from bottle import route, template, debug, request, redirect
 import bottle_session
 import MySQLdb
+import hashlib
 
 # Database's password
 f = open("flight/password")
@@ -16,7 +17,7 @@ cursor = db.cursor()
 # Homework 2 pages
 @route('/flight/signin')
 def server_static(session):
-    if session['sign_in'] == True:
+    if session['sign_in'] == True or session['sign_in'] == "True":
         redirect('/database/flight/timetable')
     else:
         return template('signin', title="Sign In For Flight Time Table", warning="")
@@ -25,6 +26,7 @@ def server_static(session):
 def do_signin(session):
     user_email = request.forms.get('email')
     passwd = request.forms.get('passwd')
+    passwd = hashlib.sha224(passwd).hexdigest()
     return check_signin(user_email, passwd, session)
 
 def check_signin(user_email, passwd, session):
@@ -70,6 +72,7 @@ def do_signup(session):
             is_admin = True
         else:
             is_admin = False
+        passwd = hashlib.sha224(passwd).hexdigest()
         cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
         db.commit()
         session['is_admin'] = is_admin
@@ -83,13 +86,15 @@ def sign_out(session):
 
 @route('/flight/timetable')
 def index(session):
-    if session['sign_in'] == None or session['sign_in'] == False:
+    if session['sign_in'] == None or session['sign_in'] == False or session['sign_in'] == "False":
         redirect('/database/flight/signin')
 
     is_admin = session.get('is_admin')
     if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
+        return template('timetable', title="Time table for flght", warning="")
         return "Hello", is_admin
     else:
+        return template('timetable', title="Time table for flght", warning="")
         return "QQ", is_admin
 
 app = bottle.default_app()
