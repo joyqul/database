@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="../static/style.css" />
 </head>
 <body>
+    <p> {{warning}} </p>
     <h1> Sign in</h1>
     <form action="/database/flight/signin" method="post">
         Email </br>
@@ -19,8 +20,5 @@
     </form>
     <p><a href="signup">Sign up</a></p>
     <p><a href="">Forgot your password?</a></p>
-    <!-- For test -->
-    <p> Test </p>
-    <p> {{text}} </p>
 </body>
 </html>

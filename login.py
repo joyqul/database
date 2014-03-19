@@ -16,34 +16,30 @@ cursor = db.cursor()
 # Homework 2 pages
 @route('/flight/signin')
 def server_static(session):
-    return template('signin', title="Sign In For Flight Time Table", text="")
+    return template('signin', title="Sign In For Flight Time Table", warning="")
 
 @route('/flight/signin', method='POST')
 def do_signin(session):
     user_email = request.forms.get('email')
     passwd = request.forms.get('passwd')
-    if check_signin(user_email, passwd):
-        cursor.execute("select `is_admin` from `user` where `account`= %s", (user_email)) 
-        is_admin = (cursor.fetchall())[0][0]
-        session['is_admin'] = is_admin
-        redirect('/database/flight/timetable')
-    else:
-        return "<p> Sign in failed. </p>"
+    return check_signin(user_email, passwd, session)
 
-def check_signin(user_email, passwd):
+def check_signin(user_email, passwd, session):
     cursor.execute("select `password` from `user` where `account`= %s", (user_email)) 
     data = cursor.fetchall()
     if data == ():
-        return template('signup', title="Sign Up For Flight Time Table", 
+        return template('signin', title="Sign In For Flight Time Table", 
                 warning="No such user")
-
     else:
         correct_passwd = data[0][0]
         if correct_passwd != None and passwd == correct_passwd:
-            return True
+            cursor.execute("select `is_admin` from `user` where `account`= %s", (user_email)) 
+            is_admin = (cursor.fetchall())[0][0]
+            session['is_admin'] = is_admin
+            redirect('/database/flight/timetable')
         else:
-            return False
-
+            return template('signin', title="Sign In For Flight Time Table", 
+                    warning="Wrong password")
 
 @route('/flight/signup')
 def server_static(session):
@@ -55,7 +51,6 @@ def do_signup(session):
     passwd = request.forms.get('password')
     passwd_conf = request.forms.get('password_confirm')
     is_admin = request.forms.get('is_admin')
-
 
     if passwd != passwd_conf:
         return template('signup', title = "Sign Up For Flight Time Table", 
@@ -72,13 +67,14 @@ def do_signup(session):
         else:
             is_admin = False
         cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
+        db.commit()
         session['is_admin'] = is_admin
         redirect('/database/flight/timetable')
 
 @route('/flight/timetable')
 def index(session):
     is_admin = session.get('is_admin')
-    if is_admin == 'True' or is_admin == True:
+    if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
         return "Hello", is_admin
     else:
         return "QQ", is_admin
