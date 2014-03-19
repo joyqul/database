@@ -58,7 +58,16 @@ def do_signup(session):
     passwd_conf = request.forms.get('password_confirm')
     is_admin = request.forms.get('is_admin')
 
-    if passwd != passwd_conf:
+    if user_email == "":
+        return template('signup', title = "Sign Up For Flight Time Table", 
+                warning = "Email cannot be empty.")
+    elif ' ' in user_email == True:
+        return template('signup', title = "Sign Up For Flight Time Table", 
+                warning = "Email cannot contain whitespace.")
+    elif passwd == "":
+        return template('signup', title = "Sign Up For Flight Time Table", 
+                warning = "Password cannot be empty.")
+    elif passwd != passwd_conf:
         return template('signup', title = "Sign Up For Flight Time Table", 
                 warning = "Password Confirmation Failed.")
 
@@ -76,8 +85,8 @@ def do_signup(session):
         cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
         db.commit()
         session['is_admin'] = is_admin
-        session['sign_in'] = True
-        redirect('/database/flight/timetable')
+        session['sign_in'] = False
+        redirect('/database/flight/signin')
 
 @route('/flight/signout')
 def sign_out(session):
