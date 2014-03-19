@@ -16,7 +16,10 @@ cursor = db.cursor()
 # Homework 2 pages
 @route('/flight/signin')
 def server_static(session):
-    return template('signin', title="Sign In For Flight Time Table", warning="")
+    if session['sign_in'] == True:
+        redirect('/database/flight/timetable')
+    else:
+        return template('signin', title="Sign In For Flight Time Table", warning="")
 
 @route('/flight/signin', method='POST')
 def do_signin(session):
@@ -36,6 +39,7 @@ def check_signin(user_email, passwd, session):
             cursor.execute("select `is_admin` from `user` where `account`= %s", (user_email)) 
             is_admin = (cursor.fetchall())[0][0]
             session['is_admin'] = is_admin
+            session['sign_in'] = True
             redirect('/database/flight/timetable')
         else:
             return template('signin', title="Sign In For Flight Time Table", 
@@ -69,22 +73,23 @@ def do_signup(session):
         cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
         db.commit()
         session['is_admin'] = is_admin
+        session['sign_in'] = True
         redirect('/database/flight/timetable')
+
+@route('/flight/signout')
+def sign_out(session):
+    session['sign_in'] = False
+    redirect('/database/flight/signin')
 
 @route('/flight/timetable')
 def index(session):
+    if session['sign_in'] == None or session['sign_in'] == False:
+        redirect('/database/flight/signin')
+
     is_admin = session.get('is_admin')
     if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
         return "Hello", is_admin
     else:
         return "QQ", is_admin
-
-@bottle.route('/flight/set/<user_name>')
-def set_name(session, user_name=None):
-    if user_name is not None:
-        session['name']=user_name
-        return "I recognize you now."
-    else:
-        return "What was that?"
 
 app = bottle.default_app()
