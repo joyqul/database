@@ -100,10 +100,18 @@ def index(session):
 
     is_admin = session.get('is_admin')
     if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
-        return template('timetable', title="Time table for flght", warning="")
+        return template('timetable', title="Time table for flght - Admin mode", warning="", is_admin = True)
         return "Hello", is_admin
     else:
-        return template('timetable', title="Time table for flght", warning="")
+        return template('timetable', title="Time table for flght", warning="", is_admin = False)
         return "QQ", is_admin
+
+@route('/flight/plane')
+def new_plane(session):
+    is_admin = session.get('is_admin')
+    if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
+        return template('plane', title="New Plane", warning="")
+    else:
+        redirect('/database/flight/timetable')
 
 app = bottle.default_app()
