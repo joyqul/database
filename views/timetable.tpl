@@ -16,16 +16,30 @@
             <td><b>Depart</b></td>
             <td><b>Arrive</b></td>
             <td><b>Company</b></td>
+            <!-- -->
+            % if is_admin:
+                <td><b>Operations</b></td>
+            % end
+            <!-- -->
         </tr>
-        <!-- for statement -->
+        <!-- -->
         % for flight in data:
         <tr>
-            % for part in flight:
-                <td> {{part}} </td>
+            <!-- -->
+            % for i in xrange(1, 7):
+                <td> {{flight[i]}} </td>
             % end
+            <!-- -->
+            % if is_admin:
+                <td>
+                    <a href="edit/{{flight[0]}}" type="submit" name="edit" value="{{flight[0]}}">Edit</a>
+                    <a href="delete/{{flight[0]}}" type="submit" name="delete" value="{{flight[0]}}">Delete</a>
+                </td>
+            % end
+            <!-- -->
         </tr>
         % end
-        <!-- end for statement -->
+        <!-- -->
     </table>
     <p><a href="signout">Sign out</a></p>
     <!-- if statement -->

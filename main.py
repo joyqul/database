@@ -21,5 +21,5 @@ def server_static(filename):
 
 debug(True)
 application = bottle.app()
-plugin = bottle_session.SessionPlugin(9999)
+plugin = bottle_session.SessionPlugin(99999)
 application.install(plugin)
