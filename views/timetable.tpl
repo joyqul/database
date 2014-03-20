@@ -8,6 +8,6 @@
 <body>
     <p> {{warning}} </p>
     <h1> Time table</h1>
-    <p><a href="signout">Sign out</a></p>
+    <p><a href="signout">Log out</a></p>
 </body>
 </html>
