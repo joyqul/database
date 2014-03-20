@@ -97,14 +97,17 @@ def sign_out(session):
 def index(session):
     if session['sign_in'] == None or session['sign_in'] == False or session['sign_in'] == "False":
         redirect('/database/flight/signin')
+    
+    cursor.execute('select flight_number, departure, destination, departure_date, arrival_date, company from `flight`')
+    data = cursor.fetchall()
 
     is_admin = session.get('is_admin')
     if is_admin in [True, 1, '1', 'True']:
-        return template('timetable', title="Time table for flght - Admin mode", warning="", is_admin = True)
-        return "Hello", is_admin
+        return template('timetable', title="Time table for flght - Admin mode", warning="", 
+                is_admin = True, data = data)
     else:
-        return template('timetable', title="Time table for flght", warning="", is_admin = False)
-        return "QQ", is_admin
+        return template('timetable', title="Time table for flght - Admin mode", warning="", 
+                is_admin = False, data = data)
 
 @route('/flight/plane')
 def new_plane(session):
@@ -117,12 +120,19 @@ def new_plane(session):
 @route('/flight/plane', method = 'POST')
 def new_plane(session):
     flight_number = request.forms.get('code')
-    departure = request.forms.get('from')
+    depart = request.forms.get('from')
     destination = request.forms.get('to')
-    departure_date = request.forms.get('depart_date')
-    departure_time = request.forms.get('depart_time')
-    arrival_date = request.forms.get('arrive_date')
-    arrival_time = request.forms.get('arrive_time')
-    return template('plane', title="New Plane", warning=departure_time)
+    depart_date = request.forms.get('depart_date')
+    depart_time = request.forms.get('depart_time')
+    departure_date = depart_date + " " + depart_time + ":00"
+    arrive_date = request.forms.get('arrive_date')
+    arrive_time = request.forms.get('arrive_time')
+    company = request.forms.get('company')
+    arrival_date = arrive_date + " " + arrive_time + ":00"
+    cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s, %s)',
+            (flight_number, depart, destination, departure_date, arrival_date, company))
+    db.commit()
+    test = flight_number + " " + depart + " " + destination + " " +departure_date + " " + arrival_date
+    return template('plane', title="New Plane", warning="Sucessfully add.")
 
 app = bottle.default_app()

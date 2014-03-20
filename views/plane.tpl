@@ -27,9 +27,10 @@
         <input name="arrive_time" value="hh:mm" type="time">
         </br>
         Company </br>
-        <input name="commit" type="text" />
+        <input name="company" type="text" />
         </br>
     <p><input type="submit" value="Create Plane"></br></p>
     </form>
+    <p><a href="timetable"> Back </a></p>
 </body>
 </html>
