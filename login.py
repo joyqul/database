@@ -103,10 +103,10 @@ def index(session):
 
     is_admin = session.get('is_admin')
     if is_admin in [True, 1, '1', 'True']:
-        return template('timetable', title="Time table for flght - Admin mode", warning="", 
+        return template('timetable', title="Time table for flight - Admin mode", warning="", 
                 is_admin = True, data = data)
     else:
-        return template('timetable', title="Time table for flght - Admin mode", warning="", 
+        return template('timetable', title="Time table for flight - Admin mode", warning="", 
                 is_admin = False, data = data)
 
 @route('/flight/edit/<flight_id>')
@@ -116,10 +116,10 @@ def edit(session, flight_id):
     else:
         cursor.execute('select * from `flight` where id = %s', (flight_id))
         data = (cursor.fetchall())[0]
-        return template('edit', title="Edit flght", warning="",
+        return template('edit', title="Edit flight", warning="",
                 is_admin = True, data = data, flight_id = flight_id)
 
-@route('/flght/edit/<flight_id>', method='POST')
+@route('/flight/edit/<flight_id>', method='POST')
 def edit(session, flight_id):
     flight_number = request.forms.get('code')
     depart = request.forms.get('from')
@@ -133,7 +133,7 @@ def edit(session, flight_id):
     company = request.forms.get('company')
 
     cursor.execute('update `flight` set flight_number = %s where id = %s', (flight_number, flight_id))
-    cursor.execute('update `flight` set depart = %s where id = %s', (depart, flight_id))
+    cursor.execute('update `flight` set departure = %s where id = %s', (depart, flight_id))
     cursor.execute('update `flight` set destination = %s where id = %s', (destination, flight_id))
     cursor.execute('update `flight` set departure_date = %s where id = %s', (departure_date, flight_id))
     cursor.execute('update `flight` set arrival_date = %s where id = %s', (arrival_date, flight_id))
