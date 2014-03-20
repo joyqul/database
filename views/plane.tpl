@@ -19,106 +19,12 @@
         <input name="to" type="text" />
         </br>
         Depart</br>
-        <select>
-        <!-- for statement -->
-            %for i in xrange(2000, 2020):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
-        <select>
-            <option>January</option>
-            <option>Febuary</option>
-            <option>March</option>
-            <option>April</option>
-            <option>May</option>
-            <option>June</option>
-            <option>July</option>
-            <option>August</option>
-            <option>September</option>
-            <option>Octorber</option>
-            <option>Nomenber</option>
-            <option>December</option>
-        </select>
-        <select>
-        <!-- for statement -->
-            %for i in xrange(1, 32):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
-        -
-        <select>
-        <!-- for statement -->
-            %for i in xrange(0, 9):
-                <option> 0{{i}} </option>
-            %end
-            %for i in xrange(10, 24):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
-        <select>
-        <!-- for statement -->
-            %for i in xrange(0, 9):
-                <option> 0{{i}} </option>
-            %end
-            %for i in xrange(10, 60):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
+        <input name="depart_date" value="yyyy-mm-dd" type="date">
+        <input name="depart_time" value="hh:mm" type="time">
         </br>
         Arrive</br>
-        <select>
-        <!-- for statement -->
-            %for i in xrange(2000, 2020):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
-        <select>
-            <option>January</option>
-            <option>Febuary</option>
-            <option>March</option>
-            <option>April</option>
-            <option>May</option>
-            <option>June</option>
-            <option>July</option>
-            <option>August</option>
-            <option>September</option>
-            <option>Octorber</option>
-            <option>Nomenber</option>
-            <option>December</option>
-        </select>
-        <select>
-        <!-- for statement -->
-            %for i in xrange(1, 32):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
-        -
-        <select>
-        <!-- for statement -->
-            %for i in xrange(0, 9):
-                <option> 0{{i}} </option>
-            %end
-            %for i in xrange(10, 24):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
-        <select>
-        <!-- for statement -->
-            %for i in xrange(0, 9):
-                <option> 0{{i}} </option>
-            %end
-            %for i in xrange(10, 60):
-                <option> {{i}} </option>
-            %end
-        <!-- end for -->
-        </select>
+        <input name="arrive_date" value="yyyy-mm-dd" type="date">
+        <input name="arrive_time" value="hh:mm" type="time">
         </br>
         Company </br>
         <input name="commit" type="text" />

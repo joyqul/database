@@ -99,7 +99,7 @@ def index(session):
         redirect('/database/flight/signin')
 
     is_admin = session.get('is_admin')
-    if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
+    if is_admin in [True, 1, '1', 'True']:
         return template('timetable', title="Time table for flght - Admin mode", warning="", is_admin = True)
         return "Hello", is_admin
     else:
@@ -109,9 +109,20 @@ def index(session):
 @route('/flight/plane')
 def new_plane(session):
     is_admin = session.get('is_admin')
-    if is_admin == True or is_admin == 1 or is_admin == '1' or is_admin == 'True':
+    if is_admin in [True, 1, '1', 'True']:
         return template('plane', title="New Plane", warning="")
     else:
         redirect('/database/flight/timetable')
+
+@route('/flight/plane', method = 'POST')
+def new_plane(session):
+    flight_number = request.forms.get('code')
+    departure = request.forms.get('from')
+    destination = request.forms.get('to')
+    departure_date = request.forms.get('depart_date')
+    departure_time = request.forms.get('depart_time')
+    arrival_date = request.forms.get('arrive_date')
+    arrival_time = request.forms.get('arrive_time')
+    return template('plane', title="New Plane", warning=departure_time)
 
 app = bottle.default_app()
