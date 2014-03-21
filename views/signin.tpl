@@ -6,16 +6,17 @@
     <link rel="stylesheet" type="text/css" href="../static/style.css" />
 </head>
 <body>
-<div id="index">
-   <p id="top"><a href="signup">Sign up</a></p>
-   <p> {{warning}} </p>
-   <h1> Sign in</h1>
-   <form action="/database/flight/signin" method="post">
-       <h3>Email: <input name="email" type="text" /> </h3>
-       <h3>Password: <input name="passwd" type="password" /> </h3>
-   <p><input type="submit" value="Sign in"></br></p>
-   </form>
-   <p><a href="">Forgot your password?</a></p>
-</div>
+    <div id="index">
+        <a href="signup">Sign up</a>
+        % if warning != "":
+            <h3> {{warning}} </h3>
+        % end
+        <h1>Flight Company</h1>
+        <form action="/database/flight/signin" method="post">
+            <h2><label>Account</label><strong><input name="email" type="text"> </strong></h2>
+            <h2><label>Password</label><strong><input name="passwd" type="password"> </strong></h2>
+            <p><input type="submit" value="Sign in"></br></p>
+        </form>
+    </div>
 </body>
 </html>
