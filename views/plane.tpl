@@ -6,28 +6,22 @@
     <link rel="stylesheet" type="text/css" href="../static/style.css" />
 </head>
 <body>
-    <p> {{warning}} </p>
-    <h1>New plane</h1>
-    <form action="/database/flight/plane" method="post">
-        Code </br>
-        <input name="code" type="text" />
-        </br>
-        From </br>
-        <input name="from" type="text" />
-        </br>
-        To </br>
-        <input name="to" type="text" />
-        </br>
-        Depart</br>
-        <input name="depart_date" value="yyyy-mm-dd" type="date">
-        <input name="depart_time" value="hh:mm" type="time">
-        </br>
-        Arrive</br>
-        <input name="arrive_date" value="yyyy-mm-dd" type="date">
-        <input name="arrive_time" value="hh:mm" type="time">
-        </br>
-    <p><input type="submit" value="Create Plane"></br></p>
-    </form>
-    <p><a href="timetable"> Back </a></p>
+    <div id="signin">
+        <p><a href="timetable"> Back </a></p>
+        % if warning !="":
+            <h3> {{warning}} </h3>
+        % end
+        <h1>New plane</h1>
+        <form action="/database/flight/plane" method="post">
+            <h2><label>Code</label><input name="code" type="text" /></h2>
+            <h2><label>From</label><input name="from" type="text" /></h2>
+            <h2><label>To</label><input name="to" type="text" />
+            <h2><label>Depart</label><input name="depart_date" value="yyyy-mm-dd" type="date"></br>
+            <h2><label></label><input name="depart_time" value="hh:mm" type="time"></h2>
+            <h2><label>Arrive</label><input name="arrive_date" value="yyyy-mm-dd" type="date"></h2>
+            <h2><label></label><input name="arrive_time" value="hh:mm" type="time"></h2>
+            <input type="submit" value="Create"></br>
+        </form>
+    </div>
 </body>
 </html>

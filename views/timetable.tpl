@@ -6,19 +6,23 @@
     <link rel="stylesheet" type="text/css" href="../static/style.css" />
 </head>
 <body>
-    <p> {{warning}} </p>
-    <h1>Listing planes</h1>
+    <div id="time">
+        <p><a href="signout">Sign out</a></p>
+        % if warning != "":
+            <h3> {{warning}} </h3>
+        % end
+        <h1>Listing planes</h1>
     <table>
         <tr>
-            <td><b>ID</b></td>
-            <td><b>Code</b></td>
-            <td><b>from</b></td>
-            <td><b>To</b></td>
-            <td><b>Depart</b></td>
-            <td><b>Arrive</b></td>
+            <th><h4>ID</h4></th>
+            <th><h4>Code</h4></th>
+            <th><h4>from</h4></th>
+            <th><h4>To</h4></th>
+            <th><h4>Depart</h4></th>
+            <th><h4>Arrive</h4></th>
             <!-- -->
             % if is_admin:
-                <td><b>Operations</b></td>
+                <th><h4>Operations</h4></th>
             % end
             <!-- -->
         </tr>
@@ -41,11 +45,11 @@
         % end
         <!-- -->
     </table>
-    <p><a href="signout">Sign out</a></p>
     <!-- if statement -->
     % if is_admin:
-        <p><a href="plane">New Plane</a></p>
+        <a href="plane"><input type="button" value="Add" /></a>
     % end
     <!-- end if statement -->
+    </div>
 </body>
 </html>

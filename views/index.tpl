@@ -15,7 +15,7 @@
     </div>
     <div id="index">
         <h2>[HW2] Flight Schedule</h2>
-        <p><a href="flight/signin">Login Page</a></p>
+        <a href="/database/flight/signin"><input type="button" value="Login Page"></a>
     </div>
 </body>
 </html>
