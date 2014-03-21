@@ -10,12 +10,12 @@
     <h1>Listing planes</h1>
     <table>
         <tr>
+            <td><b>ID</b></td>
             <td><b>Code</b></td>
             <td><b>from</b></td>
             <td><b>To</b></td>
             <td><b>Depart</b></td>
             <td><b>Arrive</b></td>
-            <td><b>Company</b></td>
             <!-- -->
             % if is_admin:
                 <td><b>Operations</b></td>
@@ -26,7 +26,7 @@
         % for flight in data:
         <tr>
             <!-- -->
-            % for i in xrange(1, 7):
+            % for i in xrange(6):
                 <td> {{flight[i]}} </td>
             % end
             <!-- -->

@@ -15,9 +15,13 @@ def server_static(filename):
 def server_static(filename):
     return static_file(filename, root='/var/www/database/')
 
-#@error(404)
-#def error404(error):
-#    return 'Nothing here >"<'
+@error(404)
+def error404(error):
+    return 'Nothing here >"<'
+
+@error(500)
+def error500(error):
+    return 'Something Wrong QAQ'
 
 debug(True)
 application = bottle.app()

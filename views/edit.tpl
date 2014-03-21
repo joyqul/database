@@ -20,7 +20,6 @@
         <input name="arrive_date" value="yyyy-mm-dd" type="date">
         <input name="arrive_time" value="hh:mm" type="time">
         </br>
-        <b>Company:</b><input name="company" type="text" value="{{data[6]}}" /> </br>
         <p><input type="submit" value="Edit"></p>
     </form>
     <p><a href="../timetable"></br> Go Back </p>

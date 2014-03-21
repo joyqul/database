@@ -121,27 +121,59 @@ def edit(session, flight_id):
 
 @route('/flight/edit/<flight_id>', method='POST')
 def edit(session, flight_id):
+    cursor.execute('select * from `flight` where id = %s', (flight_id))
+    data = (cursor.fetchall())[0]
+
     flight_number = request.forms.get('code')
+
+    if flight_number == "":
+        return template('edit', title="Edit Flight", warning="Code cannot be empty.",
+                flight_id = flight_id, data = data)
+    if ' ' in flight_number:
+        return template('edit', title="Edit Flight", warning="Code cannot contain whitespace.", 
+                flight_id = flight_id, data = data)
+
     depart = request.forms.get('from')
+
+    if depart == "":
+        return template('edit', title="Edit Flight", warning="From cannot be empty.", 
+                flight_id = flight_id, data = data)
+    if ' ' in depart:
+        return template('edit', title="Edit Flight", warning="From cannot contain whitespace.", 
+                flight_id = flight_id, data = data)
+
     destination = request.forms.get('to')
+
+    if destination == "":
+        return template('edit', title="Edit Flight", warning="To cannot be empty.", 
+                flight_id = flight_id, data = data)
+    if ' ' in destination:
+        return template('edit', title="Edit Flight", warning="To cannot contain whitespace.", 
+                flight_id = flight_id, data = data)
+
     depart_date = request.forms.get('depart_date')
     depart_time = request.forms.get('depart_time')
     departure_date = depart_date + " " + depart_time + ":00"
+
+    if depart_date == "" or depart_time == "":
+        return template('edit', title="Edit Flight", warning="Depart cannot be empty.", 
+                flight_id = flight_id, data = data)
+
     arrive_date = request.forms.get('arrive_date')
     arrive_time = request.forms.get('arrive_time')
     arrival_date = arrive_date + " " + arrive_time + ":00"
-    company = request.forms.get('company')
+
+    if depart_date == "" or depart_time == "":
+        return template('edit', title="Edit Flight", warning="Arrive cannot be empty.",
+                flight_id = flight_id, data = data)
 
     cursor.execute('update `flight` set flight_number = %s where id = %s', (flight_number, flight_id))
     cursor.execute('update `flight` set departure = %s where id = %s', (depart, flight_id))
     cursor.execute('update `flight` set destination = %s where id = %s', (destination, flight_id))
     cursor.execute('update `flight` set departure_date = %s where id = %s', (departure_date, flight_id))
     cursor.execute('update `flight` set arrival_date = %s where id = %s', (arrival_date, flight_id))
-    cursor.execute('update `flight` set company = %s where id = %s', (company, flight_id))
 
     db.commit()
-    cursor.execute('select * from `flight` where id = %s', (flight_id))
-    data = (cursor.fetchall())[0]
     redirect('/database/flight/timetable')
         
 @route('/flight/delete/<flight_id>')
@@ -164,19 +196,44 @@ def new_plane(session):
 @route('/flight/plane', method = 'POST')
 def new_plane(session):
     flight_number = request.forms.get('code')
+
+    if flight_number == "":
+        return template('plane', title="New Plane", warning="Code cannot be empty.")
+    if ' ' in flight_number:
+        return template('plane', title="New Plane", warning="Code cannot contain whitespace.")
+
     depart = request.forms.get('from')
+
+    if depart == "":
+        return template('plane', title="New Plane", warning="From cannot be empty.")
+    if ' ' in depart:
+        return template('plane', title="New Plane", warning="From cannot contain whitespace.")
+
     destination = request.forms.get('to')
+
+    if destination == "":
+        return template('plane', title="New Plane", warning="To cannot be empty.")
+    if ' ' in destination:
+        return template('plane', title="New Plane", warning="To cannot contain whitespace.")
+
     depart_date = request.forms.get('depart_date')
     depart_time = request.forms.get('depart_time')
     departure_date = depart_date + " " + depart_time + ":00"
+
+    if depart_date == "" or depart_time == "":
+        return template('plane', title="New Plane", warning="Depart cannot be empty.")
+
     arrive_date = request.forms.get('arrive_date')
     arrive_time = request.forms.get('arrive_time')
-    company = request.forms.get('company')
     arrival_date = arrive_date + " " + arrive_time + ":00"
-    cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s, %s)',
-            (flight_number, depart, destination, departure_date, arrival_date, company))
+
+    if depart_date == "" or depart_time == "":
+        return template('plane', title="New Plane", warning="Arrive cannot be empty.")
+
+    cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s)',
+            (flight_number, depart, destination, departure_date, arrival_date))
     db.commit()
-    test = flight_number + " " + depart + " " + destination + " " +departure_date + " " + arrival_date
+
     return template('plane', title="New Plane", warning="Sucessfully add.")
 
 app = bottle.default_app()
