@@ -13,7 +13,7 @@
         % end
         <h1>Flight Company</h1>
         <form action="/database/flight/signin" method="post">
-            <h2><label>Account</label><strong><input name="email" type="text"> </strong></h2>
+            <h2><label>Account</label><strong><input name="email" type="text"></strong></h2>
             <h2><label>Password</label><strong><input name="passwd" type="password"> </strong></h2>
             <input type="submit" value="Sign in"></br>
         </form>
