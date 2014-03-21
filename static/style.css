@@ -2,7 +2,7 @@ body {
     background-color: #000;
 }
 
-#index {
+#signin {
     width: 450px;
     height: 600px;
     background-color: #501;
@@ -10,7 +10,7 @@ body {
     margin-left: auto;
 }
 
-#index h1 {
+#signin h1 {
     color: white;
     text-align: center;
     font-size: 50px;
@@ -18,11 +18,11 @@ body {
     margin-bottom: 40px;
 }
 
-#index h2 {
+#signin h2 {
     color: #f90;
 }
 
-#index h3 {
+#signin h3 {
     color: #f00;
     font-size: 30px;
     text-align: center;
@@ -33,12 +33,12 @@ body {
     margin-right: auto;
 }
 
-#index label {
+#signin label {
     display: inline-block;
-    width: 100px;
+    width: 120px;
 }
 
-#index input {
+#signin input {
     background-color: #e55;
     font-size: 20px;
     color: #533;
@@ -47,26 +47,66 @@ body {
     border: 0px;
 }
 
-#index input[type="submit"] {
+#signin input[type="submit"] {
     background-color: #5ee;
     font-size: 20px;
     color: #000;
     width: 80px;
-    margin-left: 220px;
-    margin-top: 20px;
+    margin-left: 240px;
 }
 
-#index p {
+#signin p {
     background: #fff;
     padding: 30px;
     margin: 0px;
     text-align: right;
 }
 
+#index {
+    width: 450px;
+    height: auto;
+    background-color: #501;
+    margin-right: auto;
+    margin-left: auto;
+}
 
+#index h1 {
+    color: #f90;
+    padding: 20px;
+    text-align: center;
+}
+
+#index h2 {
+    color: #f90;
+    padding: 20px;
+    text-align: center;
+}
+
+#index p {
+    text-align: center;
+    font-size: 18;
+    color: #fff;
+    padding-bottom: 20px;
+}
+
+#index a {
+    text-align: center;
+    color:#5ee;
+}
+
+h1 {
+    text-align: center;
+    color: #fff;
+}
+
+h2 {
+    text-align: center;
+    color: #fff;
+}
 
 p {
     text-align: center;
+    color: #fff;
 }
 
 a {
