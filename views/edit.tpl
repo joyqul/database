@@ -16,10 +16,8 @@
             <h2><label>Code</label><input name="code" type="text" value="{{data[1]}}"/></h2>
             <h2><label>From</label><input name="from" type="text" value="{{data[2]}}" /></h2>
             <h2><label>To</label><input name="to" type="text" value="{{data[3]}}" /></h2>
-            <h2><label>Depart</label><input name="depart_date" value="yyyy-mm-dd" type="date"></h2>
-            <h2><label></label><input name="depart_time" value="hh:mm" type="time"></h2>
-            <h2><label>Arrive</label><input name="arrive_date" value="yyyy-mm-dd" type="date"></h2>
-            <h2><label></label><input name="arrive_time" value="hh:mm" type="time"></h2>
+            <h2><label>Depart</label><input name="depart_date" value="{{data[4]}}" type="datetime"></h2>
+            <h2><label>Arrive</label><input name="arrive_date" value="{{data[5]}}" type="datetime"></h2>
             <input type="submit" value="Edit">
         </form>
     </div>
