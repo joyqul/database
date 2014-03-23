@@ -168,18 +168,14 @@ def edit(session, flight_id):
                 flight_id = flight_id, data = data)
 
     depart_date = request.forms.get('depart_date')
-    depart_time = request.forms.get('depart_time')
-    departure_date = depart_date + " " + depart_time + ":00"
 
-    if depart_date == "" or depart_time == "":
+    if depart_date == "":
         return template('edit', title="Edit Flight", warning="Depart cannot be empty.", 
                 flight_id = flight_id, data = data)
 
     arrive_date = request.forms.get('arrive_date')
-    arrive_time = request.forms.get('arrive_time')
-    arrival_date = arrive_date + " " + arrive_time + ":00"
 
-    if depart_date == "" or depart_time == "":
+    if depart_date == "":
         return template('edit', title="Edit Flight", warning="Arrive cannot be empty.",
                 flight_id = flight_id, data = data)
 
@@ -188,8 +184,8 @@ def edit(session, flight_id):
     cursor.execute('update `flight` set flight_number = %s where id = %s', (flight_number, flight_id))
     cursor.execute('update `flight` set departure = %s where id = %s', (depart, flight_id))
     cursor.execute('update `flight` set destination = %s where id = %s', (destination, flight_id))
-    cursor.execute('update `flight` set departure_date = %s where id = %s', (departure_date, flight_id))
-    cursor.execute('update `flight` set arrival_date = %s where id = %s', (arrival_date, flight_id))
+    cursor.execute('update `flight` set departure_date = %s where id = %s', (depart_date, flight_id))
+    cursor.execute('update `flight` set arrival_date = %s where id = %s', (arrive_date, flight_id))
 
     db.commit()
     db.close()
