@@ -45,3 +45,72 @@ Homework 2
             - Empty string or whitespace are not allowed.
             - Id cannot be updated
         - Delete flight information
+        
+Homework 3
+---
+1.  Brief introduction
+    - This is the extension of hw2.
+    - Add "ticket price" to the flight information table.
+    - Two extra demands for the admin.
+    - New: comparison sheet!
+        - User may add their preferred flights to the comparison sheet.
+    - Please remove the capability of users to register as the admin.
+    - The design of the table and the implementation of foreign key are parts of the project.
+
+2. Comparison sheet
+    - Each user maintains their own comparison sheet.
+    - table display
+        - The displayed columns are the same as the columns of flights.
+    - Sheets management
+        - Create: refer to part 3
+        - Delete: remove any flight from the sheet.
+        - Sort: sort columns by certain attribute.
+            - Columns include "departure date", "arrival date", and "price"
+            - If the values of selected attribute are the same, sort them by flight no. (in alphabetical order)
+            - Sort the flight information in ascending/descending order.
+
+3. Flight sheet
+    - Check all flights information.
+        - Columns include "flight no", "departure"," destination", "departure date", "arrival date", and "price".
+        - Sorting and searching the flight information are required.
+    - Sort: sort columns by certain attribute.
+        - If the values of selected attribute are the same, sort them by flight no. (in alphabetical order)
+        - Sort the flight information in ascending/descending order.
+    - Search: list the satisfied flights with selected attribute and sort them orderly.
+        - Columns includes “flight no”, “departure”, and “destination”.
+        - Sort the flight information in ascending/descending order according to “departure date”, “arrival date”, or “price”.
+    - Add flights into the comparison sheet.
+
+4. User page
+    - Look up the comparison sheet. (Refer to part 2)
+    - Look up the flight information table. (Refer to part 3)
+
+5.  Admin authority
+    - Look up the comparison sheet. (Refer to part 2)
+    - Look up the flight information table. (Refer to part 3)
+    - (new) admin authority
+        - Look up the user list.
+        - The displayed columns include “account” and “identity”.
+        - Add new users.
+            - The identity may be admin or user.
+            - The format of password and account refers to hw2.
+        - Delete the user.
+            - User’s comparison sheet should be deleted as he is removed from user list.
+            - The user is forced to logout as he does any further actions.
+        - Edit the user.
+            - Admin can only modify the authority of the users.
+            - The modified authority will come into effect after user logout.
+    - (new) airport management
+        - The list of airport location.
+            - List the location of airports.
+        - Add new airport.
+            - Provided information includes “name”, “longitude”, and ”latitude”.
+            - The format of “longitude” and “latitude” are (41.40338, 2.17403) .
+        - Edit the airport data.
+            - Update the value of “name”, “longitude”, and “latitude”.
+        - Delete the airport.
+            - When admin delete some location of the airport, any flight information including the deleted place should be removed accordingly.
+            - Correspondingly, if the flight was added to someone’s comparison sheet, it should be removed, too.
+    - (modified) flight management
+        - The value of “departure” and “destination” must be valid when creating new flights.
+        - Otherwise, the update fails.
