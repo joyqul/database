@@ -59,7 +59,6 @@ def do_signup(session):
     user_email = request.forms.get('email')
     passwd = request.forms.get('password')
     passwd_conf = request.forms.get('password_confirm')
-    is_admin = request.forms.get('is_admin')
 
     if user_email == "":
         return template('signup', title = "Sign Up For Flight Time Table", 
@@ -83,10 +82,7 @@ def do_signup(session):
         return template('signup', title = "Sign Up For Flight Time Table",
                 warning = "Email is repeate.")
     else:
-        if is_admin == 'on':
-            is_admin = True
-        else:
-            is_admin = False
+        is_admin = False
         passwd = hashlib.sha224(passwd).hexdigest()
         cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
         db.commit()

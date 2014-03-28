@@ -16,7 +16,6 @@
             <h2><label>Email</label><input name="email" type="text" /></h2>
             <h2><label>Password</label><input name="password" type="password" /></h2>
             <h2><label>Confirm</label> <input name="password_confirm" type="password" /></h2>
-            <h4><input name="is_admin" type="checkbox">Admin User</h4>
             <input type="submit" value="Sign up">
         </form>
     </div>
