@@ -56,8 +56,8 @@ def server_static(session):
     session['is_admin'] = False
     session['title'] = "Sign up"
     session['action'] = "signup"
-    return template('signup', title=title, warning="",
-            is_admin=is_admin, action="signup")
+    return template('signup', title="Sign up", warning="",
+            is_admin=False, action="signup")
 
 @route('/flight/signup', method = 'POST')
 def do_signup(session):
