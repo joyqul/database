@@ -3,6 +3,7 @@ from bottle import route, template, debug, request, redirect
 import bottle_session
 import MySQLdb
 import hashlib
+from user import *
 
 # Database's password
 f = open("flight/password")
@@ -52,7 +53,11 @@ def check_signin(user_email, passwd, session):
 
 @route('/flight/signup')
 def server_static(session):
-    return template('signup', title="Sign Up For Flight Time Table", warning="")
+    session['is_admin'] = False
+    session['title'] = "Sign up"
+    session['action'] = "signup"
+    return template('signup', title=title, warning="",
+            is_admin=is_admin, action="signup")
 
 @route('/flight/signup', method = 'POST')
 def do_signup(session):
@@ -60,18 +65,27 @@ def do_signup(session):
     passwd = request.forms.get('password')
     passwd_conf = request.forms.get('password_confirm')
 
+    title = session.get('title')
+    action = session.get('action')
+
+    if session['is_admin'] in [False, "False"]:
+        is_admin = False
+    else:
+        is_admin = True
+
     if user_email == "":
-        return template('signup', title = "Sign Up For Flight Time Table", 
-                warning = "Email cannot be empty.")
+        return "Q"
+        return template('signup', title = title, is_admin = is_admin,
+                warning = "Email cannot be empty.", action = action)
     elif ' ' in user_email:
-        return template('signup', title = "Sign Up For Flight Time Table", 
-                warning = "Email cannot contain whitespace.")
+        return template('signup', title = title, is_admin = is_admin,
+                warning = "Email cannot contain whitespace.", action = action)
     elif passwd == "":
-        return template('signup', title = "Sign Up For Flight Time Table", 
-                warning = "Password cannot be empty.")
+        return template('signup', title = title, is_admin = is_admin,
+                warning = "Password cannot be empty.", action = action)
     elif passwd != passwd_conf:
-        return template('signup', title = "Sign Up For Flight Time Table", 
-                warning = "Password Confirmation Failed.")
+        return template('signup', title = title, is_admin = is_admin,
+                warning = "Password Confirmation Failed.", action = action)
 
     db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
     cursor = db.cursor()
@@ -79,17 +93,35 @@ def do_signup(session):
 
     if cursor.fetchall() != ():
         db.close()
-        return template('signup', title = "Sign Up For Flight Time Table",
-                warning = "Email is repeate.")
+        return template('signup', title = title, is_admin = is_admin, 
+                warning = "Email is repeate.", action = action)
+        
     else:
-        is_admin = False
-        passwd = hashlib.sha224(passwd).hexdigest()
-        cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
-        db.commit()
-        db.close()
-        session['is_admin'] = is_admin
-        session['sign_in'] = False
-        redirect('/database/flight/signin')
+        if is_admin == False:
+            is_admin = False
+            passwd = hashlib.sha224(passwd).hexdigest()
+            cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
+            db.commit()
+            db.close()
+            session['is_admin'] = is_admin
+            session['sign_in'] = False
+            redirect('/database/flight/signin')
+        else:
+            is_admin = request.forms.get('is_admin')
+            if is_admin == 'on':
+                is_admin = True
+            else:
+                is_admin = False
+
+            passwd = hashlib.sha224(passwd).hexdigest()
+            cursor.execute('insert into `user` values(0, %s, %s, %s)', (user_email, passwd, is_admin))
+            db.commit()
+            db.close()
+
+            is_admin = True
+            return template('signup', title = title, is_admin = is_admin, 
+                    warning = "Sucessfully add user.", action = action)
+            
 
 @route('/flight/signout')
 def sign_out(session):
@@ -270,5 +302,40 @@ def new_plane(session):
     db.close()
 
     return template('plane', title="New Plane", warning="Sucessfully add.")
+
+@route('/flight/user')
+def manage_user(session):
+    if session['sign_in'] in [None, False, "False"]:
+        redirect('/database/flight/signin')
+    if session['is_admin'] in [False, "False", 0, "0"]:
+        redirect('/database/flight/timetable')
+
+    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    cursor = db.cursor()
+    cursor.execute('select * from `user`')
+    data = cursor.fetchall()
+    db.close()
+    return template('user', title="Manage Users", warning="",
+            data = data)
+
+@route('/flight/adduser')
+def add_user(session):
+    if session['sign_in'] in [None, False, "False"]:
+        redirect('/database/flight/signin')
+    if session['is_admin'] in [False, "False", 0, "0"]:
+        redirect('/database/flight/timetable')
+    return template('signup', title="Add user", warning="",
+            is_admin=True, action="adduser")
+
+@route('/flight/adduser', method = 'POST')
+def add_user(session):
+    if session['sign_in'] in [None, False, "False"]:
+        redirect('/database/flight/signin')
+    if session['is_admin'] in [False, "False", 0, "0"]:
+        redirect('/database/flight/timetable')
+    session['is_admin'] = True
+    session['title'] = "Add user"
+    session['action'] = "adduser"
+    return do_signup(session)
 
 app = bottle.default_app()
