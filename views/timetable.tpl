@@ -20,6 +20,7 @@
             <th><h4>To</h4></th>
             <th><h4>Depart</h4></th>
             <th><h4>Arrive</h4></th>
+            <th><h4>Price</h4></th>
             <!-- -->
             % if is_admin:
                 <th><h4>Operations</h4></th>
@@ -30,7 +31,7 @@
         % for flight in data:
         <tr>
             <!-- -->
-            % for i in xrange(6):
+            % for i in xrange(7):
                 <td> {{flight[i]}} </td>
             % end
             <!-- -->

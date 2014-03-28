@@ -179,6 +179,17 @@ def edit(session, flight_id):
         return template('edit', title="Edit Flight", warning="Arrive cannot be empty.",
                 flight_id = flight_id, data = data)
 
+    price = request.forms.get('price')
+
+    if price == "":
+        return template('edit', title="Edit Flight", warning="Price cannot be empty.",
+                flight_id = flight_id, data = data)
+
+    if unicode(price).isnumeric() == False:
+        return template('edit', title="Edit Flight", warning="Price should be a number.",
+                flight_id = flight_id, data = data)
+        
+
     db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
     cursor = db.cursor()
     cursor.execute('update `flight` set flight_number = %s where id = %s', (flight_number, flight_id))
@@ -186,10 +197,12 @@ def edit(session, flight_id):
     cursor.execute('update `flight` set destination = %s where id = %s', (destination, flight_id))
     cursor.execute('update `flight` set departure_date = %s where id = %s', (depart_date, flight_id))
     cursor.execute('update `flight` set arrival_date = %s where id = %s', (arrive_date, flight_id))
+    cursor.execute('update `flight` set price = %s where id = %s', (price, flight_id))
 
     db.commit()
     db.close()
     redirect('/database/flight/timetable')
+
         
 @route('/flight/delete/<flight_id>')
 def delete(session, flight_id):
@@ -248,10 +261,15 @@ def new_plane(session):
     if depart_date == "" or depart_time == "":
         return template('plane', title="New Plane", warning="Arrive cannot be empty.")
 
+    price = request.forms.get('price')
+    
+    if price == "":
+        return template('plane', title="New Plane", warning="Price cannot be empty.")
+        
     db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
     cursor = db.cursor()
-    cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s)',
-            (flight_number, depart, destination, departure_date, arrival_date))
+    cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s, %s)',
+            (flight_number, depart, destination, departure_date, arrival_date, price))
     db.commit()
     db.close()
 

@@ -20,6 +20,7 @@
             <h2><label></label><input name="depart_time" value="hh:mm" type="time"></h2>
             <h2><label>Arrive</label><input name="arrive_date" value="yyyy-mm-dd" type="date"></h2>
             <h2><label></label><input name="arrive_time" value="hh:mm" type="time"></h2>
+            <h2><label>Price</label><input name="price" type="number" />
             <input type="submit" value="Create"></br>
         </form>
     </div>

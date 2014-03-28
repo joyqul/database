@@ -18,6 +18,7 @@
             <h2><label>To</label><input name="to" type="text" value="{{data[3]}}" /></h2>
             <h2><label>Depart</label><input name="depart_date" value="{{data[4]}}" type="datetime"></h2>
             <h2><label>Arrive</label><input name="arrive_date" value="{{data[5]}}" type="datetime"></h2>
+            <h2><label>Price</label><input name="price" value="{{data[6]}}" type="datetime"></h2>
             <input type="submit" value="Edit">
         </form>
     </div>
