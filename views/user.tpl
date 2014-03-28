@@ -28,8 +28,8 @@
                     <td>admin</td>
                 % end
                 <td>
-                    <a href="edit/{{user[0]}}" type="submit" name="edit" value="{{user[0]}}">Edit</a>
-                    <a href="delete/{{user[0]}}" type="submit" name="delete" value="{{user[0]}}">Delete</a>
+                    <a href="edituser/{{user[0]}}" type="submit" name="edit" value="{{user[0]}}">Edit</a>
+                    <a href="deluser/{{user[0]}}" type="submit" name="delete" value="{{user[0]}}">Delete</a>
                 </td>
             </tr>
         % end

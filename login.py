@@ -338,4 +338,19 @@ def add_user(session):
     session['action'] = "adduser"
     return do_signup(session)
 
+@route('/flight/deluser/<user_id>')
+def del_user(session, user_id):
+    if session['sign_in'] in [None, False, "False"]:
+        redirect('/database/flight/signin')
+    if session['is_admin'] in [False, "False", 0, "0"]:
+        redirect('/database/flight/timetable')
+
+    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    cursor = db.cursor()
+    cursor.execute('delete from `user` where id = %s', user_id)
+    db.commit()
+    db.close()
+
+    redirect('/database/flight/user')
+
 app = bottle.default_app()
