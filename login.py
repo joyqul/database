@@ -353,4 +353,35 @@ def del_user(session, user_id):
 
     redirect('/database/flight/user')
 
+@route('/flight/edituser/<user_id>')
+def edit_user(session, user_id):
+    if session['is_admin'] in [False, "False", 0, "0"]:
+        redirect('/database/flight/timetable')
+    else:
+        db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+        cursor = db.cursor()
+        cursor.execute('select * from `user` where id = %s', (user_id))
+        data = (cursor.fetchall())[0]
+        db.close()
+        return template('edituser', title="Edit User", warning="",
+                is_admin = True, data = data, user_id = user_id)
+
+@route('/flight/edituser/<user_id>', method='POST')
+def edit_user(session, user_id):
+    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    cursor = db.cursor()
+    cursor.execute('select * from `user` where id = %s', (user_id))
+    data = (cursor.fetchall())[0]
+    db.close()
+
+    is_admin = request.forms.get('is_admin')
+
+    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    cursor = db.cursor()
+    cursor.execute('update `user` set is_admin = %s where id = %s', (is_admin, user_id))
+    db.commit()
+    db.close()
+
+    redirect('/database/flight/user')
+
 app = bottle.default_app()
