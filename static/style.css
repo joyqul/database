@@ -108,6 +108,12 @@ body {
     margin-left: 780px;
 }
 
+#time input[type="button"] {
+    width:100px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 #index p {
     text-align: center;
     font-size: 18;
@@ -130,7 +136,6 @@ body {
 
 #time {
     width: 950px;
-    height: 600px;
     background-color: #501;
     margin-right: auto;
     margin-left: auto;
@@ -158,6 +163,7 @@ body {
 
 #time td {
     height: 20px;
+    width: 50px;
     color: #333;
     background-color: #eee;
 }
@@ -167,6 +173,23 @@ body {
     padding: 20px;
     margin: 0px;
     text-align: right;
+}
+
+#button table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+
+#button td {
+    display: inline-block;
+    background-color:#501;
+    width: 160px;
+    height: 60px;
+}
+
+#button input[type="button"] {
+    width: 150px;
 }
 
 h1 {
@@ -186,6 +209,7 @@ p {
 
 a {
     text-align: center;
+    width: 50px;
 }
 
 form {

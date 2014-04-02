@@ -14,6 +14,7 @@
         <h1>Listing planes</h1>
     <table>
         <tr>
+            <th><h4>ID</h4></th>
             <th><h4>Code</h4></th>
             <th><h4>from</h4></th>
             <th><h4>To</h4></th>
@@ -30,7 +31,7 @@
         % for flight in data:
         <tr>
             <!-- -->
-            % for i in xrange(1, 7):
+            % for i in xrange(7):
                 <td> {{flight[i]}} </td>
             % end
             <!-- -->
@@ -47,8 +48,16 @@
     </table>
     <!-- if statement -->
     % if is_admin:
-        <a href="plane"><input type="button" value="Add" /></a>
-        <a href="user"><input type="button" value="User" /></a>
+    <div id="button">
+    <table>
+        <tr>
+            <td><a href="user"><input type="button" value="Manage user" /></a></td>
+            <td><a href="airport"><input type="button" value="Manage airport" /></a></td>
+            <td></td>
+            <td><a href="plane"><input type="button" value="Add flight" /></a></td>
+        </tr>
+    </table>
+    </div>
     % end
     <!-- end if statement -->
     </div>
