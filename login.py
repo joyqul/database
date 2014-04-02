@@ -380,3 +380,9 @@ def edit_user(session, user_id):
     db.close()
 
     redirect('/database/flight/user')
+
+@route('/flight/airport')
+def airport():
+    data = ""
+    return template('airport', title="Airport Management", warning="",
+            data = data)
