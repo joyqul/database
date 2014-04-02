@@ -3,17 +3,13 @@ from bottle import route, template, debug, request, redirect
 import bottle_session
 import MySQLdb
 import hashlib
-from user import *
 
-# Database's password
-f = open("flight/password")
-for line in f:
-    db_passwd = line.split()
-    db_passwd = db_passwd[0]
-    
-# Homework 2 pages
+# My implement
+from db import *
+
+# Homework2 pages
 @route('/flight/signin')
-def server_static(session):
+def server_static_signin(session):
     if session['sign_in'] in [True, "True"]:
         redirect('/database/flight/timetable')
     else:
@@ -27,7 +23,7 @@ def do_signin(session):
     return check_signin(user_email, passwd, session)
 
 def check_signin(user_email, passwd, session):
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute("select `password` from `user` where `account`= %s", (user_email)) 
     data = cursor.fetchall()
@@ -38,7 +34,7 @@ def check_signin(user_email, passwd, session):
     else:
         correct_passwd = data[0][0]
         if correct_passwd != None and passwd == correct_passwd:
-            db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+            db = db_login()
             cursor = db.cursor()
             cursor.execute("select `is_admin` from `user` where `account`= %s", (user_email)) 
             is_admin = (cursor.fetchall())[0][0]
@@ -52,7 +48,7 @@ def check_signin(user_email, passwd, session):
                     warning="Wrong password")
 
 @route('/flight/signup')
-def server_static(session):
+def server_static_signup(session):
     session['is_admin'] = False
     session['title'] = "Sign up"
     session['action'] = "signup"
@@ -87,7 +83,7 @@ def do_signup(session):
         return template('signup', title = title, is_admin = is_admin,
                 warning = "Password Confirmation Failed.", action = action)
 
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `user` where `account` = %s', (user_email))
 
@@ -124,7 +120,7 @@ def do_signup(session):
             
 
 @route('/flight/signout')
-def sign_out(session):
+def signout(session):
     session['sign_in'] = False
     redirect('/database/flight/signin')
 
@@ -133,7 +129,7 @@ def index(session):
     if session['sign_in'] in [None, False, "False"]:
         redirect('/database/flight/signin')
     
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `flight`')
     data = cursor.fetchall()
@@ -152,7 +148,7 @@ def edit(session, flight_id):
     if session['is_admin'] in [False, "False", 0, "0"]:
         redirect('/database/flight/timetable')
     else:
-        db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+        db = db_login()
         cursor = db.cursor()
         cursor.execute('select * from `flight` where id = %s', (flight_id))
         data = (cursor.fetchall())[0]
@@ -161,8 +157,8 @@ def edit(session, flight_id):
                 is_admin = True, data = data, flight_id = flight_id)
 
 @route('/flight/edit/<flight_id>', method='POST')
-def edit(session, flight_id):
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+def do_edit(session, flight_id):
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `flight` where id = %s', (flight_id))
     data = (cursor.fetchall())[0]
@@ -218,7 +214,7 @@ def edit(session, flight_id):
                 flight_id = flight_id, data = data)
         
 
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('update `flight` set flight_number = %s where id = %s', (flight_number, flight_id))
     cursor.execute('update `flight` set departure = %s where id = %s', (depart, flight_id))
@@ -237,7 +233,7 @@ def delete(session, flight_id):
     if session['is_admin'] in [False, "False", 0, "0"]:
         redirect('/database/flight/timetable')
     else:
-        db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+        db = db_login()
         cursor = db.cursor()
         cursor.execute('delete from `flight` where id = %s', flight_id)
         db.commit()
@@ -294,7 +290,7 @@ def new_plane(session):
     if price == "":
         return template('plane', title="New Plane", warning="Price cannot be empty.")
         
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s, %s)',
             (flight_number, depart, destination, departure_date, arrival_date, price))
@@ -303,6 +299,7 @@ def new_plane(session):
 
     return template('plane', title="New Plane", warning="Sucessfully add.")
 
+# Homework 3 pages
 @route('/flight/user')
 def manage_user(session):
     if session['sign_in'] in [None, False, "False"]:
@@ -310,7 +307,7 @@ def manage_user(session):
     if session['is_admin'] in [False, "False", 0, "0"]:
         redirect('/database/flight/timetable')
 
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `user`')
     data = cursor.fetchall()
@@ -345,7 +342,7 @@ def del_user(session, user_id):
     if session['is_admin'] in [False, "False", 0, "0"]:
         redirect('/database/flight/timetable')
 
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('delete from `user` where id = %s', user_id)
     db.commit()
@@ -358,7 +355,7 @@ def edit_user(session, user_id):
     if session['is_admin'] in [False, "False", 0, "0"]:
         redirect('/database/flight/timetable')
     else:
-        db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+        db = db_login()
         cursor = db.cursor()
         cursor.execute('select * from `user` where id = %s', (user_id))
         data = (cursor.fetchall())[0]
@@ -368,7 +365,7 @@ def edit_user(session, user_id):
 
 @route('/flight/edituser/<user_id>', method='POST')
 def edit_user(session, user_id):
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `user` where id = %s', (user_id))
     data = (cursor.fetchall())[0]
@@ -376,12 +373,10 @@ def edit_user(session, user_id):
 
     is_admin = request.forms.get('is_admin')
 
-    db = MySQLdb.connect(host="localhost", user="root_flight", passwd= db_passwd, db="db_flight")
+    db = db_login()
     cursor = db.cursor()
     cursor.execute('update `user` set is_admin = %s where id = %s', (is_admin, user_id))
     db.commit()
     db.close()
 
     redirect('/database/flight/user')
-
-app = bottle.default_app()
