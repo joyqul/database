@@ -383,6 +383,66 @@ def edit_user(session, user_id):
 
 @route('/flight/airport')
 def airport():
-    data = ""
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `airport`')
+    data = cursor.fetchall()
+    db.close()
     return template('airport', title="Airport Management", warning="",
             data = data)
+
+@route('/flight/addairport')
+def add_airport():
+    return template('addairport', title="New Airport", warning="")
+
+@route('/flight/addairport', method = 'POST')
+def do_add_airport():
+    location = request.forms.get('location')
+    longitude = request.forms.get('longitude')
+    latitude = request.forms.get('latitude')
+
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('insert into `airport` values(0, %s, %s, %s)', (location, longitude, latitude))
+    db.commit()
+    db.close()
+
+    return template('addairport', title="New Airport", warning="Sucessfully add")
+
+@route('/flight/delairport/<airport_id>')
+def del_airport(airport_id):
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('delete from `airport` where id = %s', airport_id)
+    db.commit()
+    db.close()
+    redirect('/database/flight/airport')
+    
+
+@route('/flight/editairport/<airport_id>')
+def edit_airport(airport_id):
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `airport` where id = %s', (airport_id))
+    data = (cursor.fetchall())[0]
+    db.close()
+    return template('editairport', title="Edit Airport", warning="",
+            data = data, airport_id = airport_id)
+            
+
+@route('/flight/editairport/<airport_id>', method = 'POST')
+def do_edit_airport(airport_id):
+    location = request.forms.get('location')
+    longitude = request.forms.get('longitude')
+    latitude = request.forms.get('latitude')
+    
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('update `airport` set location = %s where id = %s', (location, airport_id))
+    cursor.execute('update `airport` set longitude = %s where id = %s', (longitude, airport_id))
+    cursor.execute('update `airport` set latitude = %s where id = %s', (latitude, airport_id))
+    db.commit()
+    db.close()
+
+    redirect('/database/flight/airport')
+    

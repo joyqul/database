@@ -29,8 +29,8 @@
             % end
             <!-- -->
             <td>
-                <a href="edit/{{airport[0]}}" type="submit" name="edit" value="{{airport[0]}}">Edit</a>
-                <a href="delete/{{airport[0]}}" type="submit" name="delete" value="{{airport[0]}}">Delete</a>
+                <a href="editairport/{{airport[0]}}" type="submit" name="edit" value="{{airport[0]}}">Edit</a>
+                <a href="delairport/{{airport[0]}}" type="submit" name="delete" value="{{airport[0]}}">Delete</a>
             </td>
             <!-- -->
         </tr>
