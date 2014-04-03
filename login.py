@@ -70,7 +70,6 @@ def do_signup(session):
         is_admin = True
 
     if user_email == "":
-        return "Q"
         return template('signup', title = title, is_admin = is_admin,
                 warning = "Email cannot be empty.", action = action)
     elif ' ' in user_email:
@@ -142,6 +141,51 @@ def index(session):
     else:
         return template('timetable', title="Time table for flight - Admin mode", warning="", 
                 is_admin = False, data = data)
+
+@route('/flight/timetable', method = 'POST')
+def timetable_request(session):
+
+    db_col = {'ID':'id', 'Code':'flight_number', 'From':'departure',
+        'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
+        'Price':'price'}
+
+    if 'sort' in request.forms: # Do order by
+        column = request.forms.get('column')
+        way = request.forms.get('way')
+
+        db = db_login()
+        cursor = db.cursor()
+        
+        if way == "Ascending":
+            cursor.execute('select * from `flight` order by %s, flight_number' %(db_col[column]))
+        else:
+            cursor.execute('select * from `flight` order by %s desc, flight_number' %(db_col[column]))
+    
+        data = cursor.fetchall()
+        db.close()
+    
+        return template('timetable', title="Time table for flight - Admin mode", warning="",
+                is_admin = True, data = data)
+    else: # Do search
+        column = request.forms.get('col')
+        pattern = request.forms.get('pattern')
+
+        db = db_login()
+        cursor = db.cursor()
+        
+        if column == "Code":
+            cursor.execute('select * from `flight` where flight_number = %s', (pattern))
+        elif column == "From":
+            cursor.execute('select * from `flight` where departure = %s', (pattern))
+        else:
+            cursor.execute('select * from `flight` where destination = %s', (pattern))
+    
+        data = cursor.fetchall()
+        db.close()
+
+        return template('timetable', title="Time table for flight - Admin mode", warning="", 
+                is_admin = True, data = data)
+    
 
 @route('/flight/edit/<flight_id>')
 def edit(session, flight_id):
@@ -413,7 +457,7 @@ def do_add_airport():
 def del_airport(airport_id):
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('delete from `airport` where id = %s', airport_id)
+    cursor.execute('delete from `airport` where id = %s', (airport_id))
     db.commit()
     db.close()
     redirect('/database/flight/airport')

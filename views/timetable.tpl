@@ -12,11 +12,39 @@
             <h3> {{warning}} </h3>
         % end
         <h1>Listing planes</h1>
+        <div id="sort">
+            <form action="/database/flight/timetable" method="post">
+                <h2> Order By:</h2>
+                <select name="column">
+                    <option selected>ID</option>
+                    <option>Code</option>
+                    <option>From</option>
+                    <option>To</option>
+                    <option>Depart</option>
+                    <option>Arrive</option>
+                    <option>Price</option>
+                </select>
+                <select name="way">
+                    <option selected>Ascending</option>
+                    <option>Descending</option>
+                </select>
+                <label><input type="submit" name="sort" value="Go"></label>
+                </ br>
+                <h2> Search:</h2>
+                <select name="col">
+                    <option selected>Code</option>
+                    <option>From</option>
+                    <option>To</option>
+                </select>
+                <input name="pattern" type="text" />
+                <label><input type="submit" name="search" value="Go"></label>
+            </form>
+        </div>
     <table>
         <tr>
             <th><h4>ID</h4></th>
             <th><h4>Code</h4></th>
-            <th><h4>from</h4></th>
+            <th><h4>From</h4></th>
             <th><h4>To</h4></th>
             <th><h4>Depart</h4></th>
             <th><h4>Arrive</h4></th>

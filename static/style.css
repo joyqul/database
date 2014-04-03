@@ -95,20 +95,24 @@ body {
 }
 
 #time input {
+    font-size: 20px;
+    color: #533;
+    margin-top: 0px;
+    margin-left: 5px;
     color: #000;
-    background-color: #5ee;
     font-size: 20px;
     width: 150px;
-    height: 30px;
     border: 0px;
-    width: 70px;
+    width: 100px;
+    height: 20px;
+}
+
+#time input[type="button"] {
     height: 30px;
     text-align: center;
     margin-top: 10px;
     margin-left: 780px;
-}
-
-#time input[type="button"] {
+    background-color: #5ee;
     width:100px;
     margin-left:auto;
     margin-right:auto;
@@ -139,6 +143,13 @@ body {
     background-color: #501;
     margin-right: auto;
     margin-left: auto;
+}
+
+#time h2{
+    color: #f90;
+    margin-bottom: 0px;
+    text-align: left;
+    font-size: 20px;
 }
 
 #time table {
@@ -175,6 +186,31 @@ body {
     text-align: right;
 }
 
+#sort {
+    background-color:#501;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left:10px;
+    width: 80%;
+}
+
+#sort label {
+    display: inline-block;
+    width: 50px;
+}
+
+#sort input[type="submit"] {
+    background-color: #5ee;
+    font-size: 20px;
+    color: #000;
+    width: 40px;
+    height: 25px;
+}
+
+#sort form{
+    text-align: left;
+}
+
 #button table {
     margin-left: auto;
     margin-right: auto;
@@ -200,6 +236,18 @@ h1 {
 h2 {
     text-align: center;
     color: #fff;
+}
+
+h3 {
+    color: #f00;
+    font-size: 22px;
+    text-align: center;
+    background-color: #000;
+    height: 30px;
+    width: 750px;
+    margin-bottom: 0px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 p {
