@@ -169,13 +169,17 @@ def timetable_request(session):
     else: # Do search
         column = request.forms.get('col')
         pattern = request.forms.get('pattern')
+        redirect('/database/flight/search/%s/%s' %(column, pattern))
+
+@route('/flight/search/<col>/<pattern>')
+def do_search(session, col, pattern):
 
         db = db_login()
         cursor = db.cursor()
         
-        if column == "Code":
+        if col == "Code":
             cursor.execute('select * from `flight` where flight_number = %s', (pattern))
-        elif column == "From":
+        elif col == "From":
             cursor.execute('select * from `flight` where departure = %s', (pattern))
         else:
             cursor.execute('select * from `flight` where destination = %s', (pattern))
@@ -183,9 +187,36 @@ def timetable_request(session):
         data = cursor.fetchall()
         db.close()
 
-        return template('timetable', title="Time table for flight - Admin mode", warning="", 
+        return template('search', title="Search flight", warning="", 
+                col = col, pattern = pattern,
                 is_admin = True, data = data)
     
+@route('/flight/search/<col>/<pattern>', method = 'POST')
+def do_search(session, col, pattern):
+
+    db_col = {'ID':'id', 'Code':'flight_number', 'From':'departure',
+        'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
+        'Price':'price'}
+
+    column = request.forms.get('column')
+    way = request.forms.get('way')
+
+    db = db_login()
+    cursor = db.cursor()
+        
+    if way == "Ascending":
+        cursor.execute('select * from `flight` where %s = "%s" order by %s, flight_number' 
+                %(db_col[col], pattern, db_col[column]))
+    else:
+        cursor.execute('select * from `flight` where %s = "%s" order by %s desc, flight_number' 
+                %(db_col[col], pattern, db_col[column]))
+        
+    data = cursor.fetchall()
+    db.close()
+
+    return template('search', title="Search flight", warning="", 
+            col = col, pattern = pattern,
+            is_admin = True, data = data)
 
 @route('/flight/edit/<flight_id>')
 def edit(session, flight_id):
