@@ -27,11 +27,14 @@ def check_signin(user_email, passwd, session):
     cursor = db.cursor()
     cursor.execute("select `password` from `user` where `account`= %s", (user_email)) 
     data = cursor.fetchall()
+    cursor.execute("select `id` from `user` where `account`= %s", (user_email)) 
+    user_id = cursor.fetchall()[0][0]
     db.close()
     if data == ():
         return template('signin', title="Sign In For Flight Time Table", 
                 warning="No such user")
     else:
+        session['user_id'] = user_id
         correct_passwd = data[0][0]
         if correct_passwd != None and passwd == correct_passwd:
             db = db_login()
@@ -135,12 +138,13 @@ def index(session):
     db.close()
 
     is_admin = session.get('is_admin')
+    user_id = session.get('user_id')
     if is_admin in [True, 1, '1', 'True']:
         return template('timetable', title="Time table for flight - Admin mode", warning="", 
-                is_admin = True, data = data)
+                is_admin = True, data = data, user_id = user_id)
     else:
         return template('timetable', title="Time table for flight - Admin mode", warning="", 
-                is_admin = False, data = data)
+                is_admin = False, data = data, user_id = user_id)
 
 @route('/flight/timetable', method = 'POST')
 def timetable_request(session):
@@ -148,6 +152,8 @@ def timetable_request(session):
     db_col = {'ID':'id', 'Code':'flight_number', 'From':'departure',
         'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
         'Price':'price'}
+
+    user_id = session.get('user_id')
 
     if 'sort' in request.forms: # Do order by
         column = request.forms.get('column')
@@ -165,12 +171,58 @@ def timetable_request(session):
         db.close()
     
         return template('timetable', title="Time table for flight - Admin mode", warning="",
-                is_admin = True, data = data)
+                is_admin = True, data = data, user_id = user_id)
     else: # Do search
         column = request.forms.get('col')
         pattern = request.forms.get('pattern')
         redirect('/database/flight/search/%s/%s' %(column, pattern))
 
+@route('/flight/favorite/<flight_id>')
+def add_favorite(session, flight_id):
+    user_id = session.get('user_id')
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `favorite` where user_id = %s and flight_id = %s', (user_id, flight_id))
+    data = cursor.fetchall()
+    if data == ():
+        cursor.execute('insert into `favorite` values(0, %s, %s)', (user_id, flight_id))
+        db.commit()
+        db.close()
+    redirect('/database/flight/timetable')
+
+@route('/flight/favorite')
+def favorite(session):
+    user_id = session.get('user_id')
+
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select flight_id from `favorite` where user_id = %s', (user_id))
+    favorite = cursor.fetchall()
+    data = []
+    
+    for flight_id in favorite:
+        cursor.execute('select * from `flight` where id = %s', (flight_id))
+        data.append(cursor.fetchall()[0])
+
+    db.close()
+
+    return template('favorite', title="Comparison sheet", warning="",
+            is_admin = True, data = data, user_id = user_id)
+
+@route('/flight/delfavorite/<flight_id>')
+def del_favorite(session, flight_id):
+    user_id = session.get('user_id')
+    
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('delete from `favorite` where user_id = %s and flight_id = %s', (user_id, flight_id))
+    db.commit()
+    db.close()
+
+    redirect('/database/flight/favorite')
+    
+        
+    
 @route('/flight/search/<col>/<pattern>')
 def do_search(session, col, pattern):
 

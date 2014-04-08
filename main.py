@@ -1,5 +1,6 @@
 import bottle, re
 from bottle import debug, template, route, error, static_file
+import bottle_session
 from login import *
 
 # Index pages
@@ -11,6 +12,10 @@ def index():
 def server_static(filename):
     return static_file(filename, root='/var/www/database/static/')
 
+@route('/static/js/<filename>')
+def server_static(filename):
+    return static_file(filename, root='/var/www/database/static/js/')
+
 @route('/<filename>')
 def server_static(filename):
     return static_file(filename, root='/var/www/database/')
@@ -19,9 +24,9 @@ def server_static(filename):
 def error404(error):
     return 'Nothing here >"<'
 
-@error(500)
-def error500(error):
-    return 'Something Wrong QAQ'
+#@error(500)
+#def error500(error):
+#    return 'Something Wrong QAQ'
 
 debug(True)
 application = bottle.app()
