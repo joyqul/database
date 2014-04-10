@@ -7,21 +7,47 @@ import hashlib
 # My implement
 from db import *
 
+# Reusable function
+def is_signin(session):
+    is_signin = session.get('is_signin')
+    if is_signin in [True, "True"]:
+        return True
+    else:
+        return False
+
+def check_is_admin(session):
+    is_admin = session.get('is_admin')
+    if is_admin in [True, "True", 1, "1"]:
+        return True
+    else:
+        return False
+
 def is_user(user_id):
     db = db_login()
     cursor = db.cursor()
     cursor.execute("select * from `user` where `id` = %s", (user_id))
     data = cursor.fetchall()
-    
     if data == ():
         return False
     else:
         return True
 
+def in_airport(place):
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `airport` where location = %s', (place))
+    data = cursor.fetchall()
+    db.close()
+    if data == ():
+        return False
+    else:
+        return True
+    
+
 # Homework2 pages
 @route('/flight/signin')
 def server_static_signin(session):
-    if session['sign_in'] in [True, "True"]:
+    if is_signin(session):
         redirect('/database/flight/timetable')
     else:
         return template('signin', title="Sign In For Flight Time Table", warning="")
@@ -41,6 +67,7 @@ def check_signin(user_email, passwd, session):
     cursor.execute("select `id` from `user` where `account`= %s", (user_email)) 
     user_id = cursor.fetchall()
     db.close()
+
     if data == ():
         return template('signin', title="Sign In For Flight Time Table", 
                 warning="No such user")
@@ -55,7 +82,7 @@ def check_signin(user_email, passwd, session):
             db.close()
 
             session['is_admin'] = is_admin
-            session['sign_in'] = True
+            session['is_signin'] = True
             redirect('/database/flight/timetable')
         else:
             return template('signin', title="Sign In For Flight Time Table", 
@@ -78,10 +105,7 @@ def do_signup(session):
     title = session.get('title')
     action = session.get('action')
 
-    if session['is_admin'] in [False, "False"]:
-        is_admin = False
-    else:
-        is_admin = True
+    is_admin = check_is_admin(session)
 
     if user_email == "":
         return template('signup', title = title, is_admin = is_admin,
@@ -104,7 +128,6 @@ def do_signup(session):
         db.close()
         return template('signup', title = title, is_admin = is_admin, 
                 warning = "Email is repeate.", action = action)
-        
     else:
         if is_admin == False:
             is_admin = False
@@ -113,7 +136,7 @@ def do_signup(session):
             db.commit()
             db.close()
             session['is_admin'] = is_admin
-            session['sign_in'] = False
+            session['is_signin'] = False
             redirect('/database/flight/signin')
         else:
             is_admin = request.forms.get('is_admin')
@@ -134,24 +157,13 @@ def do_signup(session):
 
 @route('/flight/signout')
 def signout(session):
-    session['sign_in'] = False
+    session['is_signin'] = False
     redirect('/database/flight/signin')
 
-def in_airport(place):
-    db = db_login()
-    cursor = db.cursor()
-    cursor.execute('select * from `airport` where location = %s', (place))
-    data = cursor.fetchall()
-    db.close()
-    if data == ():
-        return False
-    else:
-        return True
-    
 
 @route('/flight/timetable')
 def index(session):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
@@ -164,13 +176,9 @@ def index(session):
     data = cursor.fetchall()
     db.close()
 
-    is_admin = session.get('is_admin')
-    if is_admin in [True, 1, '1', 'True']:
-        return template('timetable', title="Time table for flight - Admin mode", warning="", 
-                is_admin = True, data = data, user_id = user_id)
-    else:
-        return template('timetable', title="Time table for flight - Admin mode", warning="", 
-                is_admin = False, data = data, user_id = user_id)
+    is_admin = check_is_admin(session)
+    return template('timetable', title="Time table for flight", warning="", 
+            is_admin = is_admin, data = data, user_id = user_id)
 
 @route('/flight/timetable', method = 'POST')
 def timetable_request(session):
@@ -178,6 +186,8 @@ def timetable_request(session):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
+
+    is_admin = check_is_admin(session)
 
     db_col = {'ID':'id', 'Code':'flight_number', 'From':'departure',
         'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
@@ -198,8 +208,8 @@ def timetable_request(session):
         data = cursor.fetchall()
         db.close()
     
-        return template('timetable', title="Time table for flight - Admin mode", warning="",
-                is_admin = True, data = data, user_id = user_id)
+        return template('timetable', title="Time table for flight", warning="",
+                is_admin = is_admin, data = data, user_id = user_id)
     else: # Do search
         column = request.forms.get('col')
         pattern = request.forms.get('pattern')
@@ -207,7 +217,7 @@ def timetable_request(session):
 
 @route('/flight/favorite/<flight_id>')
 def add_favorite(session, flight_id):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
@@ -226,12 +236,14 @@ def add_favorite(session, flight_id):
 
 @route('/flight/favorite')
 def favorite(session):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
+
+    is_admin = check_is_admin(session)
 
     db = db_login()
     cursor = db.cursor()
@@ -246,19 +258,17 @@ def favorite(session):
     db.close()
 
     return template('favorite', title="Comparison sheet", warning="",
-            is_admin = True, data = data, user_id = user_id)
+            is_admin = is_admin, data = data, user_id = user_id)
 
 @route('/flight/delfavorite/<flight_id>')
 def del_favorite(session, flight_id):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    user_id = session.get('user_id')
-    
     db = db_login()
     cursor = db.cursor()
     cursor.execute('delete from `favorite` where user_id = %s and flight_id = %s', (user_id, flight_id))
@@ -267,17 +277,16 @@ def del_favorite(session, flight_id):
 
     redirect('/database/flight/favorite')
     
-        
-    
 @route('/flight/search/<col>/<pattern>')
 def do_search(session, col, pattern):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    is_admin = check_is_admin(session)
 
     db = db_login()
     cursor = db.cursor()
@@ -294,17 +303,18 @@ def do_search(session, col, pattern):
 
     return template('search', title="Search flight", warning="", 
             col = col, pattern = pattern,
-            is_admin = True, data = data)
+            is_admin = is_admin, data = data)
     
 @route('/flight/search/<col>/<pattern>', method = 'POST')
 def do_search(session, col, pattern):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    is_admin = check_is_admin(session)
 
     db_col = {'ID':'id', 'Code':'flight_number', 'From':'departure',
         'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
@@ -328,18 +338,20 @@ def do_search(session, col, pattern):
 
     return template('search', title="Search flight", warning="", 
             col = col, pattern = pattern,
-            is_admin = True, data = data)
+            is_admin = is_admin, data = data)
 
 @route('/flight/edit/<flight_id>')
 def edit(session, flight_id):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session):
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['is_admin'] in [False, "False", 0, "0"]:
+    is_admin = check_is_admin(session)
+
+    if is_admin == False:
         redirect('/database/flight/timetable')
     else:
         db = db_login()
@@ -348,11 +360,11 @@ def edit(session, flight_id):
         data = (cursor.fetchall())[0]
         db.close()
         return template('edit', title="Edit flight", warning="",
-                is_admin = True, data = data, flight_id = flight_id)
+                is_admin = is_admin, data = data, flight_id = flight_id)
 
 @route('/flight/edit/<flight_id>', method='POST')
 def do_edit(session, flight_id):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session):
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
@@ -434,17 +446,16 @@ def do_edit(session, flight_id):
     db.close()
     redirect('/database/flight/timetable')
 
-        
 @route('/flight/delete/<flight_id>')
 def delete(session, flight_id):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['is_admin'] in [False, "False", 0, "0"]:
+    if check_is_admin(session) == False:
         redirect('/database/flight/timetable')
     else:
         db = db_login()
@@ -456,22 +467,21 @@ def delete(session, flight_id):
 
 @route('/flight/plane')
 def new_plane(session):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session):
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    is_admin = session.get('is_admin')
-    if is_admin in [True, 1, '1', 'True']:
+    if check_is_admin(session) == True:
         return template('plane', title="New Plane", warning="")
     else:
         redirect('/database/flight/timetable')
 
 @route('/flight/plane', method = 'POST')
 def new_plane(session):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session):
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
@@ -534,16 +544,14 @@ def new_plane(session):
 # Homework 3 pages
 @route('/flight/user')
 def manage_user(session):
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['sign_in'] in [None, False, "False"]:
-        redirect('/database/flight/signin')
-    if session['is_admin'] in [False, "False", 0, "0"]:
+    if check_is_admin(session) == False:
         redirect('/database/flight/timetable')
 
     db = db_login()
@@ -560,9 +568,9 @@ def add_user(session):
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
-    if session['is_admin'] in [False, "False", 0, "0"]:
+    if check_is_admin(session):
         redirect('/database/flight/timetable')
     return template('signup', title="Add user", warning="",
             is_admin=True, action="adduser")
@@ -573,10 +581,11 @@ def add_user(session):
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
-    if session['is_admin'] in [False, "False", 0, "0"]:
+    if is_admin(session) == False:
         redirect('/database/flight/timetable')
+
     session['is_admin'] = True
     session['title'] = "Add user"
     session['action'] = "adduser"
@@ -588,9 +597,10 @@ def del_user(session, user_id):
     if is_user(my_user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['sign_in'] in [None, False, "False"]:
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
-    if session['is_admin'] in [False, "False", 0, "0"]:
+
+    if check_is_admin(session) == False:
         redirect('/database/flight/timetable')
 
     db = db_login()
@@ -607,7 +617,8 @@ def edit_user(session, user_id):
     if is_user(my_user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
-    if session['is_admin'] in [False, "False", 0, "0"]:
+    is_admin = check_is_admin(session)
+    if is_admin == False:
         redirect('/database/flight/timetable')
     else:
         db = db_login()
@@ -616,7 +627,7 @@ def edit_user(session, user_id):
         data = (cursor.fetchall())[0]
         db.close()
         return template('edituser', title="Edit User", warning="",
-                is_admin = True, data = data, user_id = user_id)
+                is_admin = is_admin, data = data, user_id = user_id)
 
 @route('/flight/edituser/<user_id>', method='POST')
 def edit_user(session, user_id):
@@ -646,6 +657,12 @@ def airport(session):
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    if is_signin(session) == False:
+        redirect('/database/flight/signin')
+
+    if check_is_admin(session) == False:
+        redirect('/database/flight/timetable')
+
     db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `airport`')
@@ -655,15 +672,21 @@ def airport(session):
             data = data)
 
 @route('/flight/addairport')
-def add_airport():
+def add_airport(session):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    if is_signin(session) == False:
+        redirect('/database/flight/signin')
+
+    if check_is_admin(session == False):
+        redirect('/database/flight/timetable')
+
     return template('addairport', title="New Airport", warning="")
 
 @route('/flight/addairport', method = 'POST')
-def do_add_airport():
+def do_add_airport(session):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
@@ -686,19 +709,29 @@ def del_airport(airport_id):
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    if is_signin(session) == False:
+        redirect('/database/flight/timetable')
+
+    if check_is_admin(session) == False:
+        redirect('database/flight/timetable')
+
     db = db_login()
     cursor = db.cursor()
     cursor.execute('delete from `airport` where id = %s', (airport_id))
     db.commit()
     db.close()
     redirect('/database/flight/airport')
-    
-
 @route('/flight/editairport/<airport_id>')
 def edit_airport(airport_id):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         return template('sorry', title="Error", warning="You're not the user now.")
+
+    if is_signin(session) == False:
+        redirect('/database/flight/signin')
+        
+    if check_is_admin(session) == False:
+        redirect('/database/flight/timetable')
 
     db = db_login()
     cursor = db.cursor()
@@ -707,7 +740,6 @@ def edit_airport(airport_id):
     db.close()
     return template('editairport', title="Edit Airport", warning="",
             data = data, airport_id = airport_id)
-            
 
 @route('/flight/editairport/<airport_id>', method = 'POST')
 def do_edit_airport(airport_id):
@@ -728,4 +760,3 @@ def do_edit_airport(airport_id):
     db.close()
 
     redirect('/database/flight/airport')
-    
