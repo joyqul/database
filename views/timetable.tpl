@@ -4,6 +4,9 @@
     <title> {{title}} </title>
     <meta charset = "utf-8" />
     <link rel="stylesheet" type="text/css" href="../static/style.css" />
+    <script type="text/javascript" src="../static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../static/js/sort.js"></script>
 </head>
 <body>
     <div id="time">
@@ -14,22 +17,6 @@
         <h1>Listing planes</h1>
         <div id="sort">
             <form action="/database/flight/timetable" method="post">
-                <h2> Order By:</h2>
-                <select name="column">
-                    <option selected>ID</option>
-                    <option>Code</option>
-                    <option>From</option>
-                    <option>To</option>
-                    <option>Depart</option>
-                    <option>Arrive</option>
-                    <option>Price</option>
-                </select>
-                <select name="way">
-                    <option selected>Ascending</option>
-                    <option>Descending</option>
-                </select>
-                <label><input type="submit" name="sort" value="Go"></label>
-                </ br>
                 <h2> Search:</h2>
                 <select name="col">
                     <option selected>Code</option>
@@ -40,7 +27,8 @@
                 <label><input type="submit" name="search" value="Go"></label>
             </form>
         </div>
-    <table>
+    <table id="flight" class="tablesorter">
+    <thead>
         <tr>
             <th><h4>ID</h4></th>
             <th><h4>Code</h4></th>
@@ -54,6 +42,8 @@
             % end
             <th><h4>Favorite</h4></th>
         </tr>
+    </thead>
+    <tbody>
         % for flight in data:
         <tr>
             % for i in xrange(7):
@@ -70,6 +60,7 @@
             </td>
         </tr>
         % end
+    </tbody>
     </table>
     <div id="button">
     <table>

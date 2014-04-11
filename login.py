@@ -194,27 +194,9 @@ def timetable_request(session):
         'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
         'Price':'price'}
 
-    if 'sort' in request.forms: # Do order by
-        column = request.forms.get('column')
-        way = request.forms.get('way')
-
-        db = db_login()
-        cursor = db.cursor()
-        
-        if way == "Ascending":
-            cursor.execute('select * from `flight` order by %s, flight_number' %(db_col[column]))
-        else:
-            cursor.execute('select * from `flight` order by %s desc, flight_number' %(db_col[column]))
-    
-        data = cursor.fetchall()
-        db.close()
-    
-        return template('timetable', title="Time table for flight", warning="",
-                is_admin = is_admin, data = data, user_id = user_id)
-    else: # Do search
-        column = request.forms.get('col')
-        pattern = request.forms.get('pattern')
-        redirect('/database/flight/search/%s/%s' %(column, pattern))
+    column = request.forms.get('col')
+    pattern = request.forms.get('pattern')
+    redirect('/database/flight/search/%s/%s' %(column, pattern))
 
 @route('/flight/favorite/<flight_id>')
 def add_favorite(session, flight_id):
