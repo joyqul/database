@@ -179,7 +179,6 @@ def index(session):
     is_admin = check_is_admin(session)
     return template('timetable', title="Time table for flight", warning="", 
             is_admin = is_admin, data = data, user_id = user_id)
-
 @route('/flight/timetable', method = 'POST')
 def timetable_request(session):
 
@@ -606,6 +605,10 @@ def edit_user(session, user_id):
     db.close()
 
     is_admin = request.forms.get('is_admin')
+    if is_admin == 'on':
+        is_admin = True
+    else:
+        is_admin = False
 
     db = db_login()
     cursor = db.cursor()
