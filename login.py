@@ -348,7 +348,7 @@ def do_search(session, col, pattern):
 
 @route('/flight/edit/<flight_id>')
 def edit(session, flight_id):
-    if is_signin(session):
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
@@ -371,7 +371,7 @@ def edit(session, flight_id):
 
 @route('/flight/edit/<flight_id>', method='POST')
 def do_edit(session, flight_id):
-    if is_signin(session):
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
@@ -491,13 +491,14 @@ def new_plane(session):
 
 @route('/flight/plane', method = 'POST')
 def new_plane(session):
-    if is_signin(session):
+    if is_signin(session) == False:
         redirect('/database/flight/signin')
     
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         session['is_signin'] = False
         return template('sorry', title="Error", warning="You're not the user now.")
+
 
     flight_number = request.forms.get('code')
 
@@ -670,13 +671,13 @@ def edit_user(session, user_id):
 
 @route('/flight/airport')
 def airport(session):
+    if is_signin(session) == False:
+        redirect('/database/flight/signin')
+
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         session['is_signin'] = False
         return template('sorry', title="Error", warning="You're not the user now.")
-
-    if is_signin(session) == False:
-        redirect('/database/flight/signin')
 
     if check_is_admin(session) == False:
         redirect('/database/flight/timetable')
@@ -724,7 +725,7 @@ def do_add_airport(session):
     return template('addairport', title="New Airport", warning="Sucessfully add")
 
 @route('/flight/delairport/<airport_id>')
-def del_airport(airport_id):
+def del_airport(session, airport_id):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         session['is_signin'] = False
@@ -744,7 +745,7 @@ def del_airport(airport_id):
     redirect('/database/flight/airport')
 
 @route('/flight/editairport/<airport_id>')
-def edit_airport(airport_id):
+def edit_airport(session, airport_id):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         session['is_signin'] = False
@@ -765,7 +766,7 @@ def edit_airport(airport_id):
             data = data, airport_id = airport_id)
 
 @route('/flight/editairport/<airport_id>', method = 'POST')
-def do_edit_airport(airport_id):
+def do_edit_airport(session, airport_id):
     user_id = session.get('user_id')
     if is_user(user_id) == False:
         session['is_signin'] = False
