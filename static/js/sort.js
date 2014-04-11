@@ -1,7 +1,3 @@
-$(function() {
-  $("#flight").tablesorter(); 
-});
-
 $(document).ready(function() {
   $("#flight").tablesorter({ 
     sortList: [[0,0], [1,0]],
@@ -12,7 +8,7 @@ $(document).ready(function() {
     4: { sorter: "text" },
     5: { sorter: "text" },
     6: { sorter: "digit" },
-    7: { sorter: false },
-    8: { sorter: false },
+    7: { sorter: "false" },
+    8: { sorter: "false" },
   }); 
 });
