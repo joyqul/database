@@ -292,42 +292,6 @@ def do_search(session, col, pattern):
             col = col, pattern = pattern,
             is_admin = is_admin, data = data)
     
-@route('/flight/search/<col>/<pattern>', method = 'POST')
-def do_search(session, col, pattern):
-    if is_signin(session) == False:
-        redirect('/database/flight/signin')
-    
-    user_id = session.get('user_id')
-    if is_user(user_id) == False:
-        session['is_signin'] = False
-        return template('sorry', title="Error", warning="You're not the user now.")
-
-    is_admin = check_is_admin(session)
-
-    db_col = {'ID':'id', 'Code':'flight_number', 'From':'departure',
-        'To':'destination', 'Depart':'departure_date', 'Arrive':'arrival_date',
-        'Price':'price'}
-
-    column = request.forms.get('column')
-    way = request.forms.get('way')
-
-    db = db_login()
-    cursor = db.cursor()
-        
-    if way == "Ascending":
-        cursor.execute('select * from `flight` where %s = "%s" order by %s, flight_number' 
-                %(db_col[col], pattern, db_col[column]))
-    else:
-        cursor.execute('select * from `flight` where %s = "%s" order by %s desc, flight_number' 
-                %(db_col[col], pattern, db_col[column]))
-        
-    data = cursor.fetchall()
-    db.close()
-
-    return template('search', title="Search flight", warning="", 
-            col = col, pattern = pattern,
-            is_admin = is_admin, data = data)
-
 @route('/flight/edit/<flight_id>')
 def edit(session, flight_id):
     if is_signin(session) == False:
