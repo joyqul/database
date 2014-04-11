@@ -582,6 +582,8 @@ def edit_user(session, user_id):
     is_admin = check_is_admin(session)
     if is_admin == False:
         redirect('/database/flight/timetable')
+    elif is_user(user_id) == False:
+        return template('sorry', title="Error", warning="No such user.")
     else:
         db = db_login()
         cursor = db.cursor()

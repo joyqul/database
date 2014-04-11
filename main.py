@@ -22,13 +22,13 @@ def server_static(filename):
 
 @error(404)
 def error404(error):
-    return 'Nothing here >"<'
+    return template('sorry', title="Error 404", warning="Nothing here Q_Q")
 
 #@error(500)
 #def error500(error):
-#    return 'Something Wrong QAQ'
+#    return template('sorry', title="Error 500", warning="Something went wrong Q_Q")
 
 debug(True)
 application = bottle.app()
-plugin = bottle_session.SessionPlugin(99999)
+plugin = bottle_session.SessionPlugin(cookie_lifetime=6000)
 application.install(plugin)
