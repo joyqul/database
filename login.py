@@ -170,6 +170,7 @@ def index(session):
         session['is_signin'] = False
         return template('sorry', title="Error", warning="You're not the user now.")
     
+    session['url'] ="/database/flight/timetable"
     db = db_login()
     cursor = db.cursor()
     cursor.execute('select * from `flight`')
@@ -179,6 +180,7 @@ def index(session):
     is_admin = check_is_admin(session)
     return template('timetable', title="Time table for flight", warning="", 
             is_admin = is_admin, data = data, user_id = user_id)
+
 @route('/flight/timetable', method = 'POST')
 def timetable_request(session):
 
@@ -215,7 +217,9 @@ def add_favorite(session, flight_id):
         cursor.execute('insert into `favorite` values(0, %s, %s)', (user_id, flight_id))
         db.commit()
         db.close()
-    redirect('/database/flight/timetable')
+
+    url = session.get('url')
+    redirect(url)
 
 @route('/flight/favorite')
 def favorite(session):
@@ -287,6 +291,7 @@ def do_search(session, col, pattern):
     data = cursor.fetchall()
     db.close()
 
+    session['url'] ="/database/flight/search/" + col + "/" + pattern
     return template('search', title="Search flight", warning="", 
             col = col, pattern = pattern,
             is_admin = is_admin, data = data)
@@ -667,6 +672,12 @@ def do_add_airport(session):
     longitude = request.forms.get('longitude')
     latitude = request.forms.get('latitude')
 
+    if longitude > 180 or longitude < -180:
+        return template('addairport', title="New Airport", warning="-180 <= longitude <= 180")
+        
+    if latitude > 90 or latitude < -90:
+        return template('addairport', title="New Airport", warning="-90 <= latitude <= 90")
+    
     db = db_login()
     cursor = db.cursor()
     cursor.execute('insert into `airport` values(0, %s, %s, %s)', (location, longitude, latitude))
@@ -726,6 +737,24 @@ def do_edit_airport(session, airport_id):
     location = request.forms.get('location')
     longitude = request.forms.get('longitude')
     latitude = request.forms.get('latitude')
+
+    if float(longitude) > 180 or float(longitude) < -180:
+        db = db_login()
+        cursor = db.cursor()
+        cursor.execute('select * from `airport` where id = %s', (airport_id))
+        data = (cursor.fetchall())[0]
+        db.close()
+        return template('editairport', title="Edit Airport", warning="-180 <= longitude <= 180",
+            data = data, airport_id = airport_id)
+        
+    if float(latitude) > 90 or float(latitude) < -90:
+        db = db_login()
+        cursor = db.cursor()
+        cursor.execute('select * from `airport` where id = %s', (airport_id))
+        data = (cursor.fetchall())[0]
+        db.close()
+        return template('editairport', title="Edit Airport", warning="-90 <= latitude <= 90",
+            data = data, airport_id = airport_id)
     
     db = db_login()
     cursor = db.cursor()
