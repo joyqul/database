@@ -766,3 +766,4 @@ def do_edit_airport(session, airport_id):
     db.close()
 
     redirect('/database/flight/airport')
+
