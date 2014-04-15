@@ -673,10 +673,10 @@ def do_add_airport(session):
     longitude = request.forms.get('longitude')
     latitude = request.forms.get('latitude')
 
-    if longitude > 180 or longitude < -180:
+    if float(longitude) > 180 or float(longitude) < -180:
         return template('addairport', title="New Airport", warning="-180 <= longitude <= 180")
         
-    if latitude > 90 or latitude < -90:
+    if float(latitude) > 90 or float(latitude) < -90:
         return template('addairport', title="New Airport", warning="-90 <= latitude <= 90")
     
     db = db_login()
