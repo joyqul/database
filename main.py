@@ -24,9 +24,9 @@ def server_static(filename):
 def error404(error):
     return template('sorry', title="Error 404", warning="Nothing here Q_Q")
 
-#@error(500)
-#def error500(error):
-#    return template('sorry', title="Error 500", warning="Something went wrong Q_Q")
+@error(500)
+def error500(error):
+    return template('sorry', title="Error 500", warning="Something went wrong Q_Q")
 
 debug(True)
 application = bottle.app()

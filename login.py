@@ -280,13 +280,14 @@ def do_search(session, col, pattern):
 
     db = db_login()
     cursor = db.cursor()
+    pattern = '%' + pattern + '%'
     
     if col == "Code":
-        cursor.execute('select * from `flight` where flight_number = %s', (pattern))
+        cursor.execute("select * from `flight` where flight_number like '%s'" %(pattern))
     elif col == "From":
-        cursor.execute('select * from `flight` where departure = %s', (pattern))
+        cursor.execute("select * from `flight` where departure like '%s'" %(pattern))
     else:
-        cursor.execute('select * from `flight` where destination = %s', (pattern))
+        cursor.execute("select * from `flight` where destination like '%s'" %(pattern))
     
     data = cursor.fetchall()
     db.close()
