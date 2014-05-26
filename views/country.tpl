@@ -20,40 +20,33 @@
         % if warning != "":
             <h3> {{warning}} </h3>
         % end
-        <h1>Manage Users</h1>
+        <h1>{{title}}</h1>
     <table>
         <tr>
             <th><h4>ID</h4></th>
-            <th><h4>Account</h4></th>
-            <th><h4>Identity</h4></th>
+            <th><h4>Name</h4></th>
+            <th><h4>Abbreviation</h4></th>
             <th><h4>Operation</h4></th>
         </tr>
-        <!-- -->
-        % for user in data:
-            <tr>
-                <td>{{user[0]}}</td>
-                <td>{{user[1]}}</td>
-                % if user[3] == 0:
-                    <td>user</td>
-                % else:
-                    <td>admin</td>
-                % end
-                <td>
-                    % if user[3] == 0:
-                    <a href="edituser/{{user[0]}}" type="submit" name="edit" value="{{user[0]}}">Edit</a>
-                    % end
-                    <a href="deluser/{{user[0]}}" type="submit" name="delete" value="{{user[0]}}">Delete</a>
-                </td>
-            </tr>
+        % for country in data:
+        <tr>
+            % for i in xrange(3):
+                <td> {{country[i]}} </td>
+            % end
+            <td>
+                <a href="editcountry/{{country[0]}}" type="submit" name="edit" value="{{country[0]}}">Edit</a>
+                <a href="delcountry/{{country[0]}}" type="submit" name="delete" value="{{country[0]}}">Delete</a>
+            </td>
+        </tr>
         % end
     </table>
-        <div id="button">
+    <div id="button">
         <table>
             <tr>
-                <td><a href="adduser"><input type="button" value="Add user" /></a></td>
+                <td><a href="addcountry"><input type="button" value="Add country" /></a></td>
             </tr>
         </table>
-        </div>
+    </div>
     </div>
 </body>
 </html>

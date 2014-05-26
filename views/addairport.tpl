@@ -13,9 +13,12 @@
         % end
         <h1>New airport</h1>
         <form action="/database/flight/addairport" method="post">
+            <h2><label>Name</label><input name="name" type="text" /></h2>
             <h2><label>Location</label><input name="location" type="text" /></h2>
-            <h2><label>Longitude</label><input name="longitude" type="number" step="any"/></h2>
-            <h2><label>Latitude</label><input name="latitude" type="number" step="any"/></h2>
+            <h2><label>Longitude</label><input name="longitude" type="number" step="any" /></h2>
+            <h2><label>Latitude</label><input name="latitude" type="number" step="any" /></h2>
+            <h2><label>Country</label><input name="country" type="text" /></h2>
+            <h2><label>Timezone</label><input name="timezone" type="text" /></h2>
             <input type="submit" value="Create"></br>
         </form>
     </div>

@@ -3,6 +3,7 @@ from bottle import route, template, debug, request, redirect
 import bottle_session
 import MySQLdb
 import hashlib
+import re
 
 # My implement
 from db import *
@@ -654,7 +655,10 @@ def airport(session):
 
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('select * from `airport`')
+    cursor.execute('select a.id, a.name, a.location, a.longitude, a.latitude, c.abbre, a.timezone\
+                    from `airport` a\
+                        inner join `country` as c\
+                            on c.id = a.country_id')
     data = cursor.fetchall()
     db.close()
     return template('airport', title="Airport Management", warning = "",
@@ -682,9 +686,12 @@ def do_add_airport(session):
         session['is_signin'] = False
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    name = request.forms.get('name')
     location = request.forms.get('location')
     longitude = request.forms.get('longitude')
     latitude = request.forms.get('latitude')
+    country = request.forms.get('country')
+    timezone = request.forms.get('timezone')
 
     if float(longitude) > 180 or float(longitude) < -180:
         return template('addairport', title="New Airport", warning="-180 <= longitude <= 180")
@@ -694,11 +701,18 @@ def do_add_airport(session):
     
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('insert into `airport` values(0, %s, %s, %s)', (location, longitude, latitude))
-    db.commit()
-    db.close()
+    cursor.execute('select id from `country` where abbre = %s', (country))
+    country_id = cursor.fetchone()
 
-    return template('addairport', title="New Airport", warning="Sucessfully add")
+    if country_id != None:
+        cursor.execute('insert into `airport` values(0, %s, %s, %s, %s, %s, %s)', \
+                        (name, location, longitude, latitude, country_id[0], timezone))
+        db.commit()
+        db.close()
+        return template('addairport', title="New Airport", warning="Sucessfully add")
+    else:
+        db.close()
+        return template('addairport', title="New Airport", warning="No such country")
 
 @route('/flight/delairport/<airport_id>')
 def del_airport(session, airport_id):
@@ -735,7 +749,11 @@ def edit_airport(session, airport_id):
 
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('select * from `airport` where id = %s', (airport_id))
+    cursor.execute('select a.id, a.name, a.location, a.longitude, a.latitude, c.abbre, a.timezone\
+                    from `airport` a\
+                        inner join `country` as c\
+                            on c.id = a.country_id\
+                    where a.id = %s', (airport_id))
     data = (cursor.fetchall())[0]
     db.close()
     return template('editairport', title="Edit Airport", warning="",
@@ -755,34 +773,164 @@ def do_edit_airport(session, airport_id):
     country = request.forms.get('country')
     timezone = request.forms.get('timezone')
 
+    data = [airport_id, name, location, longitude, latitude, country, timezone]
+
     if float(longitude) > 180 or float(longitude) < -180:
-        db = db_login()
-        cursor = db.cursor()
-        cursor.execute('select * from `airport` where id = %s', (airport_id))
-        data = (cursor.fetchall())[0]
-        db.close()
         return template('editairport', title="Edit Airport", warning="-180 <= longitude <= 180",
             data = data, airport_id = airport_id)
         
     if float(latitude) > 90 or float(latitude) < -90:
-        db = db_login()
-        cursor = db.cursor()
-        cursor.execute('select * from `airport` where id = %s', (airport_id))
-        data = (cursor.fetchall())[0]
-        db.close()
         return template('editairport', title="Edit Airport", warning="-90 <= latitude <= 90",
             data = data, airport_id = airport_id)
     
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('update `airport` set name = %s,location = %s,\
+    cursor.execute('select id from `country` where abbre = %s', (country))
+    country_id = cursor.fetchone()
+
+    if country_id != None:
+        cursor.execute('update `airport` set name = %s,location = %s,\
                                          longitude = %s, latitude = %s,\
-                                         country = %s, timezone = %s\
+                                         country_id = %s, timezone = %s\
                                          where id = %s',\
                                          (name, location, longitude, latitude,\
-                                          country, timezone, airport_id))
-    db.commit()
+                                          country_id[0], timezone, airport_id))
+        db.commit()
+        db.close()
+        redirect('/database/flight/airport')
+    else:
+        db.close()
+        return template('editairport', title="Edit Airport", warning="No such country",
+            data = data, airport_id = airport_id)
+
+# Homework4
+@route('/flight/country')
+def country(session):
+    user_id = session.get('user_id')
+    if is_user(user_id) == False:
+        session['is_signin'] = False
+        return template('sorry', title="Error", warning="You're not the user now.")
+
+    if is_signin(session) == False:
+        redirect('/database/flight/timetable')
+
+    if check_is_admin(session) == False:
+        redirect('database/flight/timetable')
+    
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `country`')
+    data = cursor.fetchall()
     db.close()
 
-    redirect('/database/flight/airport')
+    return template('country', title="Managy Country", warning="",
+            data = data)
 
+@route('/flight/addcountry')
+def add_country(session):
+    user_id = session.get('user_id')
+    if is_user(user_id) == False:
+        session['is_signin'] = False
+        return template('sorry', title="Error", warning="You're not the user now.")
+
+    if is_signin(session) == False:
+        redirect('/database/flight/timetable')
+
+    if check_is_admin(session) == False:
+        redirect('database/flight/timetable')
+
+    return template('addcountry', title="Add Country", warning="")
+
+@route('/flight/addcountry', method = 'POST')
+def do_add_country(session):
+    user_id = session.get('user_id')
+    if is_user(user_id) == False:
+        session['is_signin'] = False
+        return template('sorry', title="Error", warning="You're not the user now.")
+
+    name = request.forms.get('name')
+    abbre = request.forms.get('abbre')
+    
+    if re.match("[A-Z]{3}", abbre) == None:
+        return template('addcountry', title="New Country", warning="Abbre. should be 3 capital letters")
+    
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `country` where abbre = %s or name = %s', (abbre, name))
+    data = cursor.fetchall()
+    if data == ():
+        cursor.execute('insert into `country` values(0, %s, %s)', (name, abbre))
+        db.commit()
+        db.close()
+        return template('addcountry', title="New Country", warning="Sucessfully add")
+    else:
+        return template('addcountry', title="New Country", warning="The country is already added")
+
+@route('/flight/editcountry/<country_id>')
+def edit_country(session, country_id):
+    user_id = session.get('user_id')
+    if is_user(user_id) == False:
+        session['is_signin'] = False
+        return template('sorry', title="Error", warning="You're not the user now.")
+
+    if is_signin(session) == False:
+        redirect('/database/flight/timetable')
+
+    if check_is_admin(session) == False:
+        redirect('database/flight/timetable')
+
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `country` where id = %s', (country_id))
+    data = cursor.fetchone()
+    db.close()
+
+    return template('editcountry', title="Edit Country", warning="",
+            data = data, country_id = country_id),
+        
+@route('/flight/editcountry/<country_id>', method='POST')
+def do_edit_country(session, country_id):
+    name = request.forms.get('name')
+    abbre = request.forms.get('abbre')
+    data = [country_id, name, abbre]
+    
+    if len(abbre) != 3 or re.match("[A-Z]{3}", abbre) == None:
+        return template('editcountry', title="Edit Country", warning="Abbre. should be 3 capital letters",
+                data = data, country_id = country_id)
+    
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select * from `country` where (abbre = %s or name = %s) and id != %s', 
+                            (abbre, name, country_id))
+    test = cursor.fetchall()
+    if test == ():
+        cursor.execute('update `country` set name = %s, abbre = %s where id = %s', (name, abbre, country_id))
+        db.commit()
+        db.close()
+        return template('editcountry', title="Edit Country", warning="Sucessfully edit",
+            data = data, country_id = country_id)
+    else:
+        return template('editcountry', title="Edit Country", warning="The country is already exist",
+            data = data, country_id = country_id)
+    
+@route('/flight/delcountry/<country_id>')
+def del_country(session, country_id):
+    user_id = session.get('user_id')
+    if is_user(user_id) == False:
+        session['is_signin'] = False
+        return template('sorry', title="Error", warning="You're not the user now.")
+
+    if is_signin(session) == False:
+        redirect('/database/flight/timetable')
+
+    if check_is_admin(session) == False:
+        redirect('database/flight/timetable')
+
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('delete from `country` where id = %s', (country_id))
+    db.commit()
+    db.close()
+    
+    redirect('/database/flight/country')
+    

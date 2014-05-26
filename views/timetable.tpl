@@ -15,6 +15,7 @@
             % if is_admin:
                 <li><a href="user">Manage user</a></li>
                 <li><a href="airport">Manage Airport</a></li>
+                <li><a href="country">Manage Country</a></li>
             % end
                 <li><a href="timetable">Listing planes</a></li>
                 <li><a href="favorite">Favorite sheet</a></li>
