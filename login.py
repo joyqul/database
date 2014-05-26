@@ -173,7 +173,13 @@ def index(session):
     session['url'] ="/database/flight/timetable"
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('select * from `flight`')
+    cursor.execute('select f.id, f.flight_number, dep.location, des.location,\
+            f.departure_date, f.arrival_date, f.price\
+            from `flight` f\
+                inner join `airport` as dep\
+                    on f.departure = dep.id\
+                join `airport` as des\
+                    on f.destination = des.id')
     data = cursor.fetchall()
     db.close()
 
@@ -240,7 +246,14 @@ def favorite(session):
     data = []
     
     for flight_id in favorite:
-        cursor.execute('select * from `flight` where id = %s', (flight_id))
+        cursor.execute('select f.id, f.flight_number, dep.location, des.location,\
+                f.departure_date, f.arrival_date, f.price\
+                from `flight` f\
+                    inner join `airport` as dep\
+                        on f.departure = dep.id\
+                    join `airport` as des\
+                        on f.destination = des.id\
+                where f.id = %s', (flight_id))
         data.append(cursor.fetchall()[0])
 
     db.close()
