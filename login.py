@@ -220,7 +220,7 @@ def add_favorite(session, flight_id):
     cursor.execute('select * from `favorite` where user_id = %s and flight_id = %s', (user_id, flight_id))
     data = cursor.fetchall()
     if data == ():
-        cursor.execute('insert into `favorite` values(0, %s, %s)', (user_id, flight_id))
+        cursor.execute('insert into `favorite` values(%s, %s)', (user_id, flight_id))
         db.commit()
         db.close()
 
@@ -657,7 +657,7 @@ def airport(session):
     cursor.execute('select * from `airport`')
     data = cursor.fetchall()
     db.close()
-    return template('airport', title="Airport Management", warning="",
+    return template('airport', title="Airport Management", warning = "",
             data = data)
 
 @route('/flight/addairport')
@@ -748,9 +748,12 @@ def do_edit_airport(session, airport_id):
         session['is_signin'] = False
         return template('sorry', title="Error", warning="You're not the user now.")
 
+    name = request.forms.get('name')
     location = request.forms.get('location')
     longitude = request.forms.get('longitude')
     latitude = request.forms.get('latitude')
+    country = request.forms.get('country')
+    timezone = request.forms.get('timezone')
 
     if float(longitude) > 180 or float(longitude) < -180:
         db = db_login()
@@ -772,9 +775,12 @@ def do_edit_airport(session, airport_id):
     
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('update `airport` set location = %s where id = %s', (location, airport_id))
-    cursor.execute('update `airport` set longitude = %s where id = %s', (longitude, airport_id))
-    cursor.execute('update `airport` set latitude = %s where id = %s', (latitude, airport_id))
+    cursor.execute('update `airport` set name = %s,location = %s,\
+                                         longitude = %s, latitude = %s,\
+                                         country = %s, timezone = %s\
+                                         where id = %s',\
+                                         (name, location, longitude, latitude,\
+                                          country, timezone, airport_id))
     db.commit()
     db.close()
 
