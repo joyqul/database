@@ -7,7 +7,15 @@
 </head>
 <body>
     <div id="time">
-        <p><a href="signout">Sign out</a></p>
+        <header>
+            <ul>
+                <li><a href="user">Manage user</a></li>
+                <li><a href="airport">Manage Airport</a></li>
+                <li><a href="timetable">Listing planes</a></li>
+                <li><a href="favorite">Favorite sheet</a></li>
+                <li><a href="signout">Sign out</a> </li>
+            <ul>
+        </header>
         % if warning != "":
             <h3> {{warning}} </h3>
         % end
@@ -37,14 +45,10 @@
                 </td>
             </tr>
         % end
-        <!-- -->
     </table>
         <div id="button">
         <table>
             <tr>
-                <td><a href="timetable"><input type="button" value="Listing planes" /></a></td>
-                <td><a href="airport"><input type="button" value="Manage airport" /></a></td>
-                <td></td>
                 <td><a href="adduser"><input type="button" value="Add user" /></a></td>
             </tr>
         </table>

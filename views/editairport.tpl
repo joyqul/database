@@ -7,7 +7,9 @@
 </head>
 <body>
     <div id="signin">
-        <p><a href="../airport"> Go Back </a></p>
+        <header>
+            <a href="../airport"> Go Back </a>
+        </header>
         % if warning !="":
             <h3> {{warning}} </h3>
         % end

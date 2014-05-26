@@ -10,7 +10,17 @@
 </head>
 <body>
     <div id="time">
-        <p><a href="signout">Sign out</a></p>
+        <header>
+            <ul>
+            % if is_admin:
+                <li><a href="user">Manage user</a></li>
+                <li><a href="airport">Manage Airport</a></li>
+            % end
+                <li><a href="timetable">Listing planes</a></li>
+                <li><a href="favorite">Favorite sheet</a></li>
+                <li><a href="signout">Sign out</a> </li>
+            <ul>
+        </header>
         % if warning != "":
             <h3> {{warning}} </h3>
         % end
@@ -49,18 +59,7 @@
             </tr>
             % end
         </tbody>
-    </table>
-    <div id="button">
-    <table>
-        % if is_admin:
-        <tr>
-            <td><a href="timetable"><input type="button" value="Listing planes" /></a></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
-    </div>
+    </table> <br>
     </div>
 </body>
 </html>
