@@ -36,13 +36,13 @@ def is_user(user_id):
 def in_airport(place):
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('select * from `airport` where location = %s', (place))
-    data = cursor.fetchall()
+    cursor.execute('select id from `airport` where location = %s', (place))
+    data = cursor.fetchone()
     db.close()
     if data == ():
-        return False
+        return False, data
     else:
-        return True
+        return True, data[0]
     
 
 # Homework2 pages
@@ -328,7 +328,14 @@ def edit(session, flight_id):
     else:
         db = db_login()
         cursor = db.cursor()
-        cursor.execute('select * from `flight` where id = %s', (flight_id))
+        cursor.execute('select f.id, f.flight_number, dep.location, des.location,\
+                f.departure_date, f.arrival_date, f.price\
+                from `flight` f\
+                    inner join `airport` as dep\
+                        on f.departure = dep.id\
+                    join `airport` as des\
+                        on f.destination = des.id\
+                where f.id = %s', (flight_id))
         data = (cursor.fetchall())[0]
         db.close()
         return template('edit', title="Edit flight", warning="",
@@ -346,7 +353,14 @@ def do_edit(session, flight_id):
 
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('select * from `flight` where id = %s', (flight_id))
+    cursor.execute('select f.id, f.flight_number, dep.location, des.location,\
+            f.departure_date, f.arrival_date, f.price\
+            from `flight` f\
+                inner join `airport` as dep\
+                    on f.departure = dep.id\
+                join `airport` as des\
+                    on f.destination = des.id\
+            where f.id = %s', (flight_id))
     data = (cursor.fetchall())[0]
     db.close()
 
@@ -367,7 +381,10 @@ def do_edit(session, flight_id):
     if ' ' in depart:
         return template('edit', title="Edit Flight", warning="From cannot contain whitespace.", 
                 flight_id = flight_id, data = data)
-    if in_airport(depart) == False:
+
+    test, depart_id = in_airport(depart)
+
+    if test == False:
         return template('edit', title="Edit Flight", warning="Don't have this depart in airport", 
                 flight_id = flight_id, data = data)
 
@@ -379,7 +396,9 @@ def do_edit(session, flight_id):
     if ' ' in destination:
         return template('edit', title="Edit Flight", warning="To cannot contain whitespace.", 
                 flight_id = flight_id, data = data)
-    if in_airport(destination) == False:
+
+    test, dest_id = in_airport(destination)
+    if test == False:
         return template('edit', title="Edit Flight", warning="Don't have this destination in airport", 
                 flight_id = flight_id, data = data)
 
@@ -405,12 +424,11 @@ def do_edit(session, flight_id):
         return template('edit', title="Edit Flight", warning="Price should be a number.",
                 flight_id = flight_id, data = data)
         
-
     db = db_login()
     cursor = db.cursor()
     cursor.execute('update `flight` set flight_number = %s where id = %s', (flight_number, flight_id))
-    cursor.execute('update `flight` set departure = %s where id = %s', (depart, flight_id))
-    cursor.execute('update `flight` set destination = %s where id = %s', (destination, flight_id))
+    cursor.execute('update `flight` set departure = %s where id = %s', (depart_id, flight_id))
+    cursor.execute('update `flight` set destination = %s where id = %s', (dest_id, flight_id))
     cursor.execute('update `flight` set departure_date = %s where id = %s', (depart_date, flight_id))
     cursor.execute('update `flight` set arrival_date = %s where id = %s', (arrive_date, flight_id))
     cursor.execute('update `flight` set price = %s where id = %s', (price, flight_id))
@@ -478,7 +496,9 @@ def new_plane(session):
         return template('plane', title="New Plane", warning="From cannot be empty.")
     if ' ' in depart:
         return template('plane', title="New Plane", warning="From cannot contain whitespace.")
-    if in_airport(depart) == False:
+
+    test, depart_id = in_airport(depart)
+    if test == False:
         return template('plane', title="New Plane", warning="Don't have this depart in airport")
 
     destination = request.forms.get('to')
@@ -487,7 +507,9 @@ def new_plane(session):
         return template('plane', title="New Plane", warning="To cannot be empty.")
     if ' ' in destination:
         return template('plane', title="New Plane", warning="To cannot contain whitespace.")
-    if in_airport(destination) == False:
+
+    test, dest_id = in_airport(destination)
+    if test == False:
         return template('plane', title="New Plane", warning="Don't have this destination in airport")
 
     depart_date = request.forms.get('depart_date')
@@ -512,7 +534,7 @@ def new_plane(session):
     db = db_login()
     cursor = db.cursor()
     cursor.execute('insert into `flight` values(0, %s, %s, %s, %s, %s, %s)',
-            (flight_number, depart, destination, departure_date, arrival_date, price))
+            (flight_number, depart_id, dest_id, departure_date, arrival_date, price))
     db.commit()
     db.close()
 
