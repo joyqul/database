@@ -715,11 +715,26 @@ def do_add_airport(session):
     country = request.forms.get('country')
     timezone = request.forms.get('timezone')
 
+    if name == "":
+        return template('addairport', title="New Airport", warning="Name cannot be empty")
+
+    if location == "":
+        return template('addairport', title="New Airport", warning="Location cannot be empty")
+
+    if longitude == "":
+        return template('addairport', title="New Airport", warning="longitude cannot be empty")
+
     if float(longitude) > 180 or float(longitude) < -180:
         return template('addairport', title="New Airport", warning="-180 <= longitude <= 180")
+
+    if latitude == "":
+        return template('addairport', title="New Airport", warning="latitude cannot be empty")
         
     if float(latitude) > 90 or float(latitude) < -90:
         return template('addairport', title="New Airport", warning="-90 <= latitude <= 90")
+
+    if len(timezone) != 6 or re.match("[-+][0-9]{2}[:][0]{2}", timezone) == None:
+        return template('addairport', title="New Airport", warning="timezone format wrong (ex: +08:00)")
     
     db = db_login()
     cursor = db.cursor()
@@ -797,14 +812,29 @@ def do_edit_airport(session, airport_id):
 
     data = [airport_id, name, location, longitude, latitude, country, timezone]
 
+    if name == "":
+        return template('editairport', title="Edit Airport", warning="Name cannot be empty",
+               data = data, airport_id = airport_id) 
+
+    if longitude == "":
+        return template('editairport', title="Edit Airport", warning="Longitude cannot be empty",
+               data = data, airport_id = airport_id) 
+
     if float(longitude) > 180 or float(longitude) < -180:
         return template('editairport', title="Edit Airport", warning="-180 <= longitude <= 180",
             data = data, airport_id = airport_id)
+        
+    if latitude == "":
+        return template('editairport', title="Edit Airport", warning="Latitude cannot be empty",
+               data = data, airport_id = airport_id) 
         
     if float(latitude) > 90 or float(latitude) < -90:
         return template('editairport', title="Edit Airport", warning="-90 <= latitude <= 90",
             data = data, airport_id = airport_id)
     
+    if len(timezone) != 6 or re.match("[-+][0-9]{2}[:][0]{2}", timezone) == None:
+        return template('editairport', title="New Airport", warning="timezone format wrong (ex: +08:00)")
+
     db = db_login()
     cursor = db.cursor()
     cursor.execute('select id from `country` where abbre = %s', (country))
