@@ -7,7 +7,12 @@
 </head>
 <body>
     <div id="signin">
-        <p><a href="signup">Sign up</a></p>
+        <header>
+            <ul>
+                <li><a href="ticket">Ticket Search</a></li>
+                <li><a href="signup">Sign up</a></li>
+            <ul>
+        </header>
         % if warning != "":
             <h3> {{warning}} </h3>
         % end

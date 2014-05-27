@@ -10,7 +10,12 @@
         % if is_admin == True:
             <p><a href="user">Back</a></p>
         % else:
-            <p><a href="signin">Sign in</a></p>
+            <header>
+                <ul>
+                    <li><a href="ticket">Ticket Search</a></li>
+                    <li><a href="signin">Sign in</a></li>
+                <ul>
+            </header>
         % end
             
         % if warning != "":

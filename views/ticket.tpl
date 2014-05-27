@@ -21,8 +21,11 @@
                 <li><a href="timetable">Listing planes</a></li>
                 <li><a href="favorite">Favorite sheet</a></li>
                 <li><a href="signout">Sign out</a> </li>
+                <li><a href="ticket">Ticket Search</a></li>
+            % else:
+                <li><a href="signin">Sign in</a></li>
+                <li><a href="signup">Sign up</a></li>
             % end
-                <li><a href="favorite">Ticket Search</a></li>
             <ul>
         </header>
         % if warning != "":
