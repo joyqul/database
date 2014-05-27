@@ -3,16 +3,16 @@
 <head>
     <title> {{title}} </title>
     <meta charset = "utf-8" />
-    <link rel="stylesheet" type="text/css" href="../static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/signin.css" />
 </head>
 <body>
-    <div id="signin">
-        <header>
-            <ul>
-                <li><a href="ticket">Ticket Search</a></li>
-                <li><a href="signup">Sign up</a></li>
-            <ul>
-        </header>
+    <div id="header">
+        <ul>
+            <li><a href="ticket">Ticket Search</a></li>
+            <li><a href="signup">Sign up</a></li>
+        <ul>
+    </div>
+    <div id="content">
         % if warning != "":
             <h3> {{warning}} </h3>
         % end
@@ -22,6 +22,8 @@
             <h2><label>Password</label><strong><input name="passwd" type="password"> </strong></h2>
             <input type="submit" value="Sign in"></br>
         </form>
+    </div>
+    <div id="footer">
     </div>
 </body>
 </html>

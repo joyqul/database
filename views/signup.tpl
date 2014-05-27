@@ -3,10 +3,10 @@
 <head>
     <title> {{title}} </title>
     <meta charset = "utf-8" />
-    <link rel="stylesheet" type="text/css" href="../static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/signin.css" />
 </head>
 <body>
-    <div id="signin">
+    <div id="header">
         % if is_admin == True:
             <p><a href="user">Back</a></p>
         % else:
@@ -17,7 +17,8 @@
                 <ul>
             </header>
         % end
-            
+    </div>
+    <div id="content">
         % if warning != "":
             <h3> {{warning}} </h3>
         % end
@@ -31,6 +32,8 @@
             % end
             <input type="submit" value="{{title}}">
         </form>
+    </div>
+    <div id="footer">
     </div>
 </body>
 </html>
