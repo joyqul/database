@@ -39,7 +39,7 @@ def in_airport(place):
     cursor.execute('select id from `airport` where location = %s', (place))
     data = cursor.fetchone()
     db.close()
-    if data == ():
+    if data in [(), None]:
         return False, data
     else:
         return True, data[0]
