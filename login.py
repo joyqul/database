@@ -986,3 +986,34 @@ def del_country(session, country_id):
     
     redirect('/database/flight/country')
     
+@route('/flight/ticket')
+def ticket(session):
+    signin = is_signin(session)
+    is_admin = check_is_admin(session)
+
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select name from `airport`')
+    depart = cursor.fetchall()
+
+    return template('ticket', title="Ticket", warning="",
+            data = depart, signin = signin, is_admin = is_admin)
+
+@route('/flight/ticket', method='POST')
+def search_ticket(session):
+    signin = is_signin(session)
+    is_admin = check_is_admin(session)
+
+    db = db_login()
+    cursor = db.cursor()
+    cursor.execute('select name from `airport`')
+    data = cursor.fetchall()
+
+    depart = request.forms.get('depart')
+    dest = request.forms.get('dest')
+    times = request.forms.get('times')
+
+    test = [depart, dest, times]
+    
+    return template('ticket', title="", warning=test,
+            data = data, signin = signin, is_admin = is_admin)

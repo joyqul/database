@@ -15,6 +15,7 @@
                 <li><a href="timetable">Listing planes</a></li>
                 <li><a href="favorite">Favorite sheet</a></li>
                 <li><a href="signout">Sign out</a> </li>
+                <li><a href="favorite">Ticket Search</a></li>
             <ul>
         </header>
         % if warning != "":
