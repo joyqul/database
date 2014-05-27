@@ -997,7 +997,7 @@ def ticket(session):
     depart = cursor.fetchall()
 
     return template('ticket', title="Ticket", warning="",
-            max_row = 0, search = depart, data = "", signin = signin, is_admin = is_admin)
+            times = 0, max_row = 0, search = depart, data = "", signin = signin, is_admin = is_admin)
 
 @route('/flight/ticket', method='POST')
 def search_ticket(session):
@@ -1045,7 +1045,6 @@ def search_ticket(session):
         and dest.location = '%s'\
     order by %s %s"\
 %(depart_abbre, dest_abbre, orderby, asc))
-        max_row = 1
     elif times == '1':
         cursor.execute("select * from\
 (\
@@ -1106,7 +1105,6 @@ def search_ticket(session):
     )\
 ) as F order by %s %s"\
 %(dest_abbre, dest_abbre, depart_abbre, dest_abbre, orderby, asc))
-        max_row = 2
     else:
         cursor.execute("select * from\
 (\
@@ -1228,7 +1226,6 @@ def search_ticket(session):
     )\
 ) as F order by %s %s"\
 %(depart_abbre, dest_abbre, dest_abbre, dest_abbre, depart_abbre, dest_abbre, orderby, asc))
-        max_row = 3
 
     data = cursor.fetchall()
     db.close()
@@ -1243,4 +1240,5 @@ def search_ticket(session):
             rowspan_num.append(3)
 
     return template('ticket', title="Ticket", warning="",
-            max_row = rowspan_num, search = search, data = data, signin = signin, is_admin = is_admin)
+            times = int(times), max_row = rowspan_num, search = search, data = data, 
+            signin = signin, is_admin = is_admin)

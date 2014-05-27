@@ -88,7 +88,7 @@
             % i = 1
             % for ticket in data:
                 <tr >
-                <td rowspan="{{max_row[i-1]}}">{{i}} {{max_row[i-1]}}</td>
+                <td rowspan="{{max_row[i-1]}}">{{i}}</td>
                 % for j in xrange(6):
                     <td>{{ticket[j]}}</td>
                 % end
