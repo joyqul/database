@@ -3,8 +3,12 @@
 <head>
     <title> {{title}} </title>
     <meta charset = "utf-8" />
+    <link rel="stylesheet" type="text/css" href="../static/tablesorter.css" />
     <link rel="stylesheet" type="text/css" href="../static/main.css" />
     <link rel="stylesheet" type="text/css" href="../static/ticket.css" />
+    <script type="text/javascript" src="../static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../static/js/sort.js"></script>
 </head>
 <body>
     <div id="time">
@@ -28,13 +32,16 @@
             <label><h2>User</h2></label>
             <a href="adduser"><input type="submit" value="Add" /></a>
         </div>
-        <table>
+        <table id="user" class="tablesorter">
+        <thead>
             <tr>
                 <th><h4>ID</h4></th>
                 <th><h4>Account</h4></th>
                 <th><h4>Identity</h4></th>
-                <th><h4>Operation</h4></th>
+                <th data-sorter="false"><h4>Operation</h4></th>
             </tr>
+        </thead>
+        <tbody>
             % for user in data:
                 <tr>
                     <td>{{user[0]}}</td>
@@ -52,6 +59,7 @@
                     </td>
                 </tr>
             % end
+        </tbody>
         </table>
     <div id="footer">
         <p>May 2014, database project done by joyqul, hmlin</p>

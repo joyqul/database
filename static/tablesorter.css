@@ -1,5 +1,5 @@
 #time table.tablesorter thead tr th, #time table.tablesorter tfoot tr th {
-    padding: 4px;
+    padding: 0px;
 }
 #time table.tablesorter th:not(.sorter-false) {
     background-image: url(bg.gif);

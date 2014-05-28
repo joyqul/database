@@ -3,8 +3,12 @@
 <head>
     <title> {{title}} </title>
     <meta charset = "utf-8" />
+    <link rel="stylesheet" type="text/css" href="../static/tablesorter.css" />
     <link rel="stylesheet" type="text/css" href="../static/main.css" />
     <link rel="stylesheet" type="text/css" href="../static/ticket.css" />
+    <script type="text/javascript" src="../static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../static/js/sort.js"></script>
 </head>
 <body>
     <div id="time">
@@ -28,7 +32,8 @@
             <label><h2>Airport</h2></label>
             <a href="addairport"><input type="submit" value="Add" /></a>
         </div>
-        <table>
+        <table id="airport" class="tablesorter">
+        <thead>
             <tr>
                 <th><h4>ID</h4></th>
                 <th><h4>Name</h4></th>
@@ -37,8 +42,10 @@
                 <th><h4>Latitude</h4></th>
                 <th><h4>Country</h4></th>
                 <th><h4>Timezone</h4></th>
-                <th><h4>Operation</h4></th>
+                <th data-sorter="false"><h4>Operation</h4></th>
             </tr>
+        </thead>
+        <tbody>
             % for airport in data:
             <tr>
                 % for i in xrange(7):
@@ -50,6 +57,7 @@
                 </td>
             </tr>
             % end
+        </tbody>
         </table>
     </div>
     <div id="footer">

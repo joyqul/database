@@ -3,8 +3,12 @@
 <head>
     <title> {{title}} </title>
     <meta charset = "utf-8" />
+    <link rel="stylesheet" type="text/css" href="../static/tablesorter.css" />
     <link rel="stylesheet" type="text/css" href="../static/main.css" />
     <link rel="stylesheet" type="text/css" href="../static/ticket.css" />
+    <script type="text/javascript" src="../static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../static/js/sort.js"></script>
 </head>
 <body>
     <div id="time">
@@ -28,13 +32,16 @@
             <label><h2>Country</h2></label>
             <a href="addcountry"><input type="submit" value="Add" /></a>
         </div>
-        <table>
+        <table id="user" class="tablesorter">
+        <thead>
             <tr>
                 <th><h4>ID</h4></th>
                 <th><h4>Name</h4></th>
                 <th><h4>Abbreviation</h4></th>
-                <th><h4>Operation</h4></th>
+                <th data-sorter="false"><h4>Operation</h4></th>
             </tr>
+        </thead>
+        <tbody>
             % for country in data:
             <tr>
                 % for i in xrange(3):
@@ -46,6 +53,7 @@
                 </td>
             </tr>
             % end
+        </tbody>
         </table>
     </div>
     <div id="footer">
