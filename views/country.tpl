@@ -25,8 +25,8 @@
         % end
         <h1>{{title}}</h1>
         <div id="sort">
-        <label><h2>Country</h2></label>
-        <a href="addcountry"><input type="submit" value="Add" /></a>
+            <label><h2>Country</h2></label>
+            <a href="addcountry"><input type="submit" value="Add" /></a>
         </div>
         <table>
             <tr>
