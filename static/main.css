@@ -42,7 +42,7 @@ form {
     text-align: center;
 }
 
-input[type="submit"] {
+input[type="submit"], input[type="button"]{
     -moz-box-shadow: inset 0px 1px 0px 0px #97c4fe;
     -webkit-box-shadow: inset 0px 1px 0px 0px #97c4fe;
     box-shadow: inset 0px 1px 0px 0px #97c4fe;
@@ -57,14 +57,15 @@ input[type="submit"] {
     width: 80px;
     text-decoration: none;
     text-align: center;
+    margin-bottom: 10px;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, input[type="button"]:hover {
     background-color: #e55;
     color: #333;
 }
 
-input[type="submit"]:active {
+input[type="submit"]:active, input[type="button"]:active {
     position: relative;
     top: 1px;
 }

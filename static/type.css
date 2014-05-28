@@ -1,0 +1,17 @@
+#content input[type="text"] {
+    padding: 5px 10px;
+    background-color: #333;
+    font-size: 20px;
+    color: #fff;
+    width: 220px;
+    height: 25px;
+    border: 0px;
+    padding-top: 0px;
+    overflow: hidden;
+}
+
+#content input[type="text"]:focus, #content input[type="password"]:focus {
+    background-color: #e55;
+    color: #533;
+}
+
