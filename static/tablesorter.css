@@ -1,0 +1,19 @@
+#time table.tablesorter thead tr th, #time table.tablesorter tfoot tr th {
+    padding: 4px;
+}
+#time table.tablesorter th:not(.sorter-false) {
+    background-image: url(bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+}
+
+#time table.tablesorter thead tr th.tablesorter-headerAsc {
+    background-image: url(asc.gif);
+}
+#time table.tablesorter thead tr th.tablesorter-headerDesc {
+    background-image: url(desc.gif);
+}
+#time table.tablesorter th.tablesorter-headerDesc, #time table.tablesorter thead tr th.tablesorter-headerAsc {
+    background-color: #8dbdd8;
+}
