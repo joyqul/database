@@ -9,14 +9,12 @@
 <body>
     <div id="header">
         % if is_admin == True:
-            <p><a href="user">Back</a></p>
+            <ul><li><a href="user">Back</a></li></ul>
         % else:
-            <header>
-                <ul>
-                    <li><a href="ticket">Ticket Search</a></li>
-                    <li><a href="signin">Sign in</a></li>
-                <ul>
-            </header>
+           <ul>
+               <li><a href="ticket">Ticket Search</a></li>
+               <li><a href="signin">Sign in</a></li>
+           <ul>
         % end
     </div>
     <div id="content">

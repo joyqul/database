@@ -46,7 +46,8 @@ body {
     margin-left: 270px;
 }
 
-#content input[type="text"], #content input[type="password"] {
+#content input[type="text"], #content input[type="password"], 
+    #content input[type="number"], #content input[type="date"], #content input[type="time"] {
     padding: 5px 10px;
     background-color: #333;
     font-size: 20px;
@@ -58,9 +59,15 @@ body {
     border-radius: 5px;
 }
 
-#content input[type="text"]:focus, #content input[type="password"]:focus {
+#content input[type="text"]:focus, #content input[type="password"]:focus, #content input[type="number"]:focus {
     background-color: #e55;
     color: #533;
+}
+
+#content input[type="number"]:hover, #content input[type="date"]:hover, #content input[type="time"]:hover,
+    #content input[type="date"]:focus, #content input[type="time"]:focus {
+    background-color: #e55;
+    color: #333;
 }
 
 #content input[type="checkbox"] {
