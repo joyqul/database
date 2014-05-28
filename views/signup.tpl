@@ -26,7 +26,7 @@
         <form action="/database/flight/{{action}}" method="post">
             <h2><label>Email</label><input name="email" type="text" /></h2>
             <h2><label>Password</label><input name="password" type="password" /></h2>
-            <h2><label>Confirm</label> <input name="password_confirm" type="password" /></h2>
+            <h2><label>Confirm</label><input name="password_confirm" type="password" /></h2>
             % if is_admin == True:
                 <h4><input name="is_admin" type="checkbox">Admin User</h4>
             % end
@@ -34,6 +34,7 @@
         </form>
     </div>
     <div id="footer">
+        <p>May 2014, database project done by joyqul, hmlin</p>
     </div>
 </body>
 </html>
