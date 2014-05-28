@@ -34,8 +34,17 @@ h3 {
 }
 
 a {
+    text-decoration: none;
     text-align: center;
     width: 50px;
+}
+
+a:link, a:visited {
+    color: #333;
+}
+
+a:hover {
+    color: #e55;
 }
 
 form {
