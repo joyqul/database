@@ -18,8 +18,8 @@
                 % end
                 <li><a href="timetable">Listing planes</a></li>
                 <li><a href="favorite">Favorite sheet</a></li>
-                <li><a href="signout">Sign out</a> </li>
                 <li><a href="ticket">Ticket Search</a></li>
+                <li><a href="signout">Sign out</a> </li>
             % else:
                 <li><a href="signin">Sign in</a></li>
                 <li><a href="signup">Sign up</a></li>
@@ -32,7 +32,7 @@
             % end
             <h1>{{title}}</h1>
             <div id="sort">
-                <form action="/database/flight/test" method="post">
+                <form action="/database/flight/ticket" method="post">
                     <label><h2>From</h2></label>
                     <select name="depart">
                         % for place in search:
