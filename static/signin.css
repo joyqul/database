@@ -1,46 +1,5 @@
 body {
-    background-color: #501;
     background-image: url('signin_bg.jpg');
-}
-
-ul {
-    list-style-type: none; 
-    padding-bottom: 3px;
-    margin: 0px;
-}
-
-li {
-    display: inline; 
-    padding-left: 10px; 
-    padding-right: 10px;
-}
-
-h1 {
-    text-align: center;
-    text-shadow: 2px 2px #000;
-    color: #f90;
-}
-
-h2 {
-    text-align: center;
-    color: #fff;
-}
-
-h3 {
-    font-size: 22px;
-    text-align: center;
-    background-color: rgba(0, 0, 0, .5);
-    height: 30px;
-    margin-bottom: 0px;
-}
-
-a {
-    text-align: center;
-    width: 50px;
-}
-
-form {
-    text-align: center;
 }
 
 #header {
@@ -54,17 +13,6 @@ form {
     background-color: rgba(255, 255, 255, .8);
 }
 
-#footer {
-    width: 100%;
-    height: 60px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, .8);
-    text-align: right;
-    color: #fff;
-}
-
 #content {
     background-color: rgba(0, 0, 0, .6);
     position: relative;
@@ -73,7 +21,6 @@ form {
 }
 
 #content h1 {
-    color: white;
     text-align: center;
     font-size: 40px;
     margin-top: 30px;
@@ -105,7 +52,13 @@ form {
     width: 120px;
 }
 
-#content input {
+#content input[type="submit"] {
+    border: 0px;
+    margin-left: 270px;
+}
+
+#content input[type="text"], #content input[type="password"] {
+    padding: 5px 10px;
     background-color: #333;
     font-size: 20px;
     color: #fff;
@@ -113,15 +66,7 @@ form {
     height: 25px;
     border: 0px;
     margin-left: 15px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-#content input[type="text"], #content input[type="password"] {
-    padding: 5px 10px;
-    color: 
+    border-radius: 5px;
 }
 
 #content input[type="text"]:focus, #content input[type="password"]:focus {
@@ -129,64 +74,10 @@ form {
     color: #533;
 }
 
-#content input[type="submit"] {
-    margin-left: 240px;
-
-}
-
 #content input[type="checkbox"] {
     height: 20px; width: 20px;
 }
 
-#footer p {
-    color: #fff;
-    padding-right: 20px;
-    text-align: right;
-}
-
-#content input[type="submit"] {
-    -moz-box-shadow: inset -2px -2px 5px 0px #bee2f9;
-    -webkit-box-shadow: inset -2px -2px 5px 0px #bee2f9;
-    box-shadow: inset -2px -2px 5px 0px #bee2f9;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #63b8ee), color-stop(1, #468ccf) );
-    background: -moz-linear-gradient( center top, #63b8ee 5%, #468ccf 100% );
-    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#63b8ee', endColorstr='#468ccf');
-    background-color: #63b8ee;
-    -webkit-border-top-left-radius: 11px;
-    -moz-border-radius-topleft: 11px;
-    border-top-left-radius: 11px;
-    -webkit-border-top-right-radius: 11px;
-    -moz-border-radius-topright: 11px;
-    border-top-right-radius: 11px;
-    -webkit-border-bottom-right-radius: 11px;
-    -moz-border-radius-bottomright: 11px;
-    border-bottom-right-radius: 11px;
-    -webkit-border-bottom-left-radius: 11px;
-    -moz-border-radius-bottomleft: 11px;
-    border-bottom-left-radius: 11px;
-    text-indent: 0px;
-    border: 1px solid #3866a3;
-    display: inline-block;
-    color: #14396a;
-    font-family: Georgia;
-    font-size: 20px;
-    font-weight: bold;
-    font-style: normal;
-    height: 40px;
-    line-height: 40px;
-    width: 100px;
-    text-decoration: none;
-    text-align: center;
-}
-
-#content input[type="submit"]:hover {
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #468ccf), color-stop(1, #63b8ee) );
-    background: -moz-linear-gradient( center top, #468ccf 5%, #63b8ee 100% );
-    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#468ccf', endColorstr='#63b8ee');
-    background-color: #468ccf;
-}
-
-#content input[type="submit"]:active {
-    position: relative;
-    top: 1px;
+#footer {
+    bottom: 0;
 }
