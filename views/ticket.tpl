@@ -122,15 +122,26 @@
                 % i = 1
                 % for ticket in data:
                     <tr >
-                    <td rowspan="{{max_row[i-1]}}">{{i}}</td>
+                    % if is_round:
+                        <td rowspan="{{max_row[2*i-2] + max_row[2*i-1]}}">{{i}}</td>
+                    % else:
+                        <td rowspan="{{max_row[i-1]}}">{{i}}</td>
+                    % end
                     % for j in xrange(6):
                         <td>{{ticket[j]}}</td>
                     % end
-                    <td rowspan="{{max_row[i-1]}}">{{ticket[18]}}</td>
-                    <td rowspan="{{max_row[i-1]}}">{{ticket[19]}}</td>
-                    <td rowspan="{{max_row[i-1]}}">{{ticket[20]}}</td>
+                    % if is_round:
+                        <td rowspan="{{max_row[2*i-2] + max_row[2*i-1]}}">{{ticket[18]}}</td>
+                        <td rowspan="{{max_row[2*i-2] + max_row[2*i-1]}}">{{ticket[19]}}</td>
+                        <td rowspan="{{max_row[2*i-2] + max_row[2*i-1]}}">{{ticket[20]}}</td>
+                    % else:
+                        <td rowspan="{{max_row[i-1]}}">{{ticket[18]}}</td>
+                        <td rowspan="{{max_row[i-1]}}">{{ticket[19]}}</td>
+                        <td rowspan="{{max_row[i-1]}}">{{ticket[20]}}</td>
+                    % end
                     </tr>
-                    % for l in xrange(6, 6 * max_row[i-1]):
+                    % row_num = max_row[i-1] if is_round else max_row[2*i-2]
+                    % for l in xrange(6, 6 * row_num):
                         % if l % 6 == 0:
                             <tr>
                         % end
@@ -139,6 +150,17 @@
                             </tr>
                         % end
                     % end
+                    % if is_round:
+                        % for j in xrange(22, 22 + 6*max_row[2*i-1]):
+                            % if j % 6 == 4:
+                                <tr>
+                            % end
+                            <td>{{ticket[j]}}</td>
+                            % if j % 6 == 3:
+                                </tr>
+                            % end
+                        % end
+                    % end 
                     % i = i + 1
                 % end
                 </tbody>
