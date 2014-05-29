@@ -76,6 +76,7 @@ body {
 }
 
 #checkbox_admin {
+padding: 0px;
     width: 155px;
     height: 40px;
     background: #333;
