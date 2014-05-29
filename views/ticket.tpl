@@ -5,8 +5,17 @@
     <meta charset = "utf-8" />
     <link rel="stylesheet" type="text/css" href="../static/main.css" />
     <link rel="stylesheet" type="text/css" href="../static/ticket.css" />
+    <link rel="stylesheet" type="text/css" href="../static/jquery-ui.css">
+    <script type="text/javascript" src="../static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="../static/js/dialog.js"></script>
 </head>
 <body>
+    % if query != "":
+    <div id="dialog" title="SQL code">
+        <p>{{query}}</p>
+    </div>
+    % end
     <div id="time">
         <div id="header">
             <ul>
