@@ -297,12 +297,21 @@ def do_search(session, col, pattern):
     pattern = '%' + pattern + '%'
     
     if col == "Code":
-        cursor.execute("select * from `flight` where flight_number like '%s'" %(pattern))
+        col = "flight_number"
     elif col == "From":
-        cursor.execute("select * from `flight` where departure like '%s'" %(pattern))
+        col = "departure"
     else:
-        cursor.execute("select * from `flight` where destination like '%s'" %(pattern))
-    
+        col = "destination"
+
+    cursor.execute("select f.id, f.flight_number, dep.location, des.location,\
+            f.departure_date, f.arrival_date, f.price\
+            from `flight` f\
+                inner join `airport` as dep\
+                    on f.departure = dep.id\
+                join `airport` as des\
+                    on f.destination = des.id\
+             where %s like '%s'" %(col, pattern))
+
     data = cursor.fetchall()
     db.close()
 
@@ -875,7 +884,7 @@ def country(session):
     data = cursor.fetchall()
     db.close()
 
-    return template('country', title="Managy Country", warning="",
+    return template('country', title="Manage Country", warning="",
             data = data)
 
 @route('/flight/addcountry')
