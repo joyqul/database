@@ -1007,7 +1007,7 @@ def ticket(session):
     depart = cursor.fetchall()
 
     return template('ticket', title="Ticket", warning="",
-            times = 0, max_row = 0, search = depart, data = "", signin = signin, is_admin = is_admin)
+            query = "", times = 0, max_row = 0, search = depart, data = "", signin = signin, is_admin = is_admin)
 
 @route('/flight/ticket', method='POST')
 def search_ticket(session):
@@ -1252,4 +1252,4 @@ def search_ticket(session):
 
     return template('ticket', title="Ticket", warning="",
             times = int(times), max_row = rowspan_num, search = search, data = data, 
-            signin = signin, is_admin = is_admin)
+            query = query, signin = signin, is_admin = is_admin)
