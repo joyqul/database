@@ -27,7 +27,12 @@
             <h2><label>Password</label><input name="password" type="password" /></h2>
             <h2><label>Confirm</label><input name="password_confirm" type="password" /></h2>
             % if is_admin == True:
-                <h4><input name="is_admin" type="checkbox">Admin User</h4>
+            <label>
+            <div id="checkbox_admin"> 
+                <input name="is_admin" type="checkbox" id="checkbox_adminInput">
+                <label for="checkbox_adminInput"></label>
+            </div></label>
+            </br>
             % end
             <input type="submit" value="{{title}}">
         </form>
