@@ -1002,7 +1002,8 @@ def ticket(session):
 
     db = db_login()
     cursor = db.cursor()
-    cursor.execute('select name from `airport`')
+    cursor.execute('select a.name, c.name from `airport` a\
+            inner join `country` as c on c.id = a.country_id order by c.name')
     depart = cursor.fetchall()
 
     return template('ticket', title="Ticket", warning="",
@@ -1018,7 +1019,8 @@ def search_ticket(session):
     cursor.execute('select name from `airport`')
     data = cursor.fetchall()
 
-    translate = { 'Price':'price', 'Arrival time': 'final_date', 'Transfer time': 'trans_time'}
+    translate = { 'Price':'price', 'Transfer time': 'trans_time',
+                  'Arrival time': 'final_date', 'Departure time': 'first_dep_date'}
 
     depart = request.forms.get('depart')
     dest = request.forms.get('dest')
@@ -1026,215 +1028,215 @@ def search_ticket(session):
     orderby = translate[request.forms.get('orderby')]
     asc = request.forms.get('asc')
 
-    cursor.execute('select location from `airport` where name = %s', (depart))
-    depart_abbre = (cursor.fetchone())[0]
-    cursor.execute('select location from `airport` where name = %s', (dest))
-    dest_abbre = (cursor.fetchone())[0]
-    
     cursor.execute('select name from `airport`')
+    cursor.execute('select a.name, c.name from `airport` a\
+            inner join `country` as c on c.id = a.country_id order by c.name')
     search = cursor.fetchall()
+    query = ""
 
     if times == '0':
-        cursor.execute("\
-    select f.flight_number as first_flight_num, dep.location as first_dep, dest.location as first_dest,\
-            f.departure_date as first_dep_date, f.arrival_date as first_arri_date,\
-        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                    convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time,\
-            NULL as sec_flight_num, NULL as sec_dep, NULL as sec_dest, NULL as sec_dep_date, NULL as sec_dest_date, NULL as sec_flight_time,\
-            NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time,\
-        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as flight_time,\
-            0 as trans_time, f.price as price, f.arrival_date as final_date\
-    from flight f\
-        inner join airport as dep \
-            on dep.id = f.departure\
-        join airport as dest\
-            on dest.id = f.destination\
-    where dep.location = '%s'\
-        and dest.location = '%s'\
-    order by %s %s"\
-%(depart_abbre, dest_abbre, orderby, asc))
+        query = '\
+    select f.flight_number as first_flight_num, dep.name as first_dep, dest.name as first_dest, \
+            f.departure_date as first_dep_date, f.arrival_date as first_arri_date, \
+        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, "+00:00"), \
+                                    convert_tz(f.arrival_date, dest.timezone, "+00:00"))) as first_flight_time, \
+            NULL as sec_flight_num, NULL as sec_dep, NULL as sec_dest, NULL as sec_dep_date, NULL as sec_dest_date, NULL as sec_flight_time, \
+            NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time, \
+        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, "+00:00"), \
+                                             convert_tz(f.arrival_date, dest.timezone, "+00:00"))) as flight_time, \
+            0 as trans_time, f.price as price, f.arrival_date as final_date \
+    from flight f  \
+        inner join airport as dep  \
+            on dep.id = f.departure \
+        join airport as dest \
+            on dest.id = f.destination \
+    where dep.name = "%s" \
+        and dest.name = "%s" \
+    order by %s %s' %(depart, dest, orderby, asc)
+        cursor.execute(query)
+
     elif times == '1':
-        cursor.execute("select * from\
-(\
-    (\
-    select f.flight_number as first_flight_num, dep.location as first_dep, dest.location as first_dest,\
-            f.departure_date as first_dep_date, f.arrival_date as first_arri_date,\
-        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                    convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time,\
-            NULL as sec_flight_num, NULL as sec_dep, NULL as sec_dest, NULL as sec_dep_date, NULL as sec_dest_date, NULL as sec_flight_time,\
-            NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time,\
-        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as flight_time,\
-            0 as trans_time, f.price as price, f.arrival_date as final_date\
-    from flight f\
-        inner join airport as dep \
-            on dep.id = f.departure\
-        join airport as dest\
-            on dest.id = f.destination\
-    where dep.location = '%s'\
-        and dest.location = '%s'\
-    )\
-    union\
-    (\
-    select A.first_flight_num, A.first_dep , A.first_dest, A.first_dep_date, A.first_arri_date, A.first_flight_time, \
-        B.sec_flight_num, B.sec_dep, B.sec_dest, B.sec_dep_date, B.sec_arri_date, B.sec_flight_time,\
-        NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time,\
-        addtime(first_flight_time, sec_flight_time) as flight_time,\
-        sec_to_time(timestampdiff(second, A.first_arri_date, B.sec_dep_date)) as trans_time,\
-        (A.price + B.price) * 0.9 as price, B.sec_arri_date as final_date\
-    from\
-        (\
-        select f.flight_number as first_flight_num, dep.location as first_dep, dest.location as first_dest,\
-                f.departure_date as first_dep_date, f.arrival_date as first_arri_date,\
-            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, f.price as price\
-        from flight f\
-            inner join airport as dep\
-                on dep.id = f.departure\
-            join airport as dest\
-                on dest.id = f.destination\
-        where dep.location = '%s'\
-        )  as A\
-    inner join\
-    (\
-        select f.flight_number as sec_flight_num, dep.location as sec_dep, dest.location as sec_dest,\
-                f.departure_date as sec_dep_date, f.arrival_date as sec_arri_date,\
-            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as sec_flight_time, f.price as price\
-        from flight f\
-            inner join airport as dep\
-                on dep.id = f.departure\
-            join airport as dest\
-                on dest.id = f.destination\
-        where dest.location = '%s'\
-    ) as B\
-    on A.first_dest = B.sec_dep\
-        and timestampdiff(hour, A.first_arri_date, B.sec_dep_date) >= 2\
-    )\
-) as F order by %s %s"\
-%(dest_abbre, dest_abbre, depart_abbre, dest_abbre, orderby, asc))
+        query = "select * from \
+( \
+    ( \
+    select f.flight_number as first_flight_num, dep.name as first_dep, dest.name as first_dest, \
+            f.departure_date as first_dep_date, f.arrival_date as first_arri_date, \
+        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                    convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, \
+            NULL as sec_flight_num, NULL as sec_dep, NULL as sec_dest, NULL as sec_dep_date, NULL as sec_dest_date, NULL as sec_flight_time, \
+            NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time, \
+        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as flight_time, \
+            0 as trans_time, f.price as price, f.arrival_date as final_date \
+    from flight f  \
+        inner join airport as dep  \
+            on dep.id = f.departure \
+        join airport as dest \
+            on dest.id = f.destination \
+    where dep.name = '%s' \
+        and dest.name = '%s' \
+    ) \
+    union \
+    ( \
+    select A.first_flight_num, A.first_dep , A.first_dest, A.first_dep_date, A.first_arri_date, A.first_flight_time,  \
+        B.sec_flight_num, B.sec_dep, B.sec_dest, B.sec_dep_date, B.sec_arri_date, B.sec_flight_time, \
+        NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time, \
+        addtime(first_flight_time, sec_flight_time) as flight_time, \
+        sec_to_time(timestampdiff(second, A.first_arri_date, B.sec_dep_date)) as trans_time, \
+        (A.price + B.price) * 0.9 as price, B.sec_arri_date as final_date \
+    from \
+        ( \
+        select f.flight_number as first_flight_num, dep.name as first_dep, dest.name as first_dest, \
+                f.departure_date as first_dep_date, f.arrival_date as first_arri_date, \
+            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, f.price as price \
+        from flight f  \
+            inner join airport as dep \
+                on dep.id = f.departure \
+            join airport as dest \
+                on dest.id = f.destination \
+        where dep.name = '%s' \
+        )  as A \
+    inner join \
+    ( \
+        select f.flight_number as sec_flight_num, dep.name as sec_dep, dest.name as sec_dest, \
+                f.departure_date as sec_dep_date, f.arrival_date as sec_arri_date, \
+            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as sec_flight_time, f.price as price \
+        from flight f  \
+            inner join airport as dep \
+                on dep.id = f.departure \
+            join airport as dest \
+                on dest.id = f.destination \
+        where dest.name = '%s' \
+    ) as B \
+    on A.first_dest = B.sec_dep \
+        and timestampdiff(hour, A.first_arri_date, B.sec_dep_date) >= 2 \
+    ) \
+) as F order by %s %s" %(depart, dest, depart, dest, orderby, asc)
+        cursor.execute(query)
     else:
-        cursor.execute("select * from\
-(\
-    (\
-    select f.flight_number as first_flight_num, dep.location as first_dep, dest.location as first_dest,\
-            f.departure_date as first_dep_date, f.arrival_date as first_arri_date,\
-        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                    convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time,\
-            NULL as sec_flight_num, NULL as sec_dep, NULL as sec_dest, NULL as sec_dep_date, NULL as sec_dest_date, NULL as sec_flight_time,\
-            NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time,\
-        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as flight_time,\
-            0 as trans_time, f.price as price, f.arrival_date as final_date\
-    from flight f\
-        inner join airport as dep \
-            on dep.id = f.departure\
-        join airport as dest\
-            on dest.id = f.destination\
-    where dep.location = '%s'\
-        and dest.location = '%s'\
-    )\
-    union\
-    (\
-    select A.first_flight_num, A.first_dep , A.first_dest, A.first_dep_date, A.first_arri_date, A.first_flight_time, \
-        B.sec_flight_num, B.sec_dep, B.sec_dest, B.sec_dep_date, B.sec_arri_date, B.sec_flight_time,\
-        NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time,\
-        addtime(first_flight_time, sec_flight_time) as flight_time,\
-        sec_to_time(timestampdiff(second, A.first_arri_date, B.sec_dep_date)) as trans_time,\
-        (A.price + B.price) * 0.9 as price, B.sec_arri_date as final_date\
-    from\
-        (\
-        select f.flight_number as first_flight_num, dep.location as first_dep, dest.location as first_dest,\
-                f.departure_date as first_dep_date, f.arrival_date as first_arri_date,\
-            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, f.price as price\
-        from flight f\
-            inner join airport as dep\
-                on dep.id = f.departure\
-            join airport as dest\
-                on dest.id = f.destination\
-        where dep.location = '%s'\
-        )  as A\
-    inner join\
-    (\
-        select f.flight_number as sec_flight_num, dep.location as sec_dep, dest.location as sec_dest,\
-                f.departure_date as sec_dep_date, f.arrival_date as sec_arri_date,\
-            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as sec_flight_time, f.price as price\
-        from flight f\
-            inner join airport as dep\
-                on dep.id = f.departure\
-            join airport as dest\
-                on dest.id = f.destination\
-        where dest.location = '%s'\
-    ) as B\
-    on A.first_dest = B.sec_dep\
-        and timestampdiff(hour, A.first_arri_date, B.sec_dep_date) >= 2\
-    )\
-    union\
-    (\
-    select first_flight_num, E.first_dep , E.first_dest, E.first_dep_date, E.first_arri_date, E.first_flight_time, \
-        sec_flight_num, E.sec_dep, E.sec_dest, E.sec_dep_date, E.sec_arri_date, E.sec_flight_time,\
-        thr_flight_num, E.thr_dep, E.thr_dest, E.thr_dep_date, E.thr_arri_date, E.thr_flight_time,\
-        addtime(addtime(first_flight_time, sec_flight_time), thr_flight_time) as flight_time,\
-        addtime(first_trans_time, sec_trans_time) as trans_time,\
-        (first_price + sec_price + thr_price) * 0.8 as price, thr_arri_date as final_date\
-    from\
-    (\
-        select C.*, D.*, sec_to_time(timestampdiff(second, C.sec_arri_date, D.thr_dep_date)) as sec_trans_time\
-        from\
-        (   \
-            select *, sec_to_time(timestampdiff(second, A.first_arri_date, B.sec_dep_date)) as first_trans_time from \
-            (   \
-                select f.flight_number as first_flight_num, dep.location as first_dep, dest.location as first_dest,\
-                            f.departure_date as first_dep_date, f.arrival_date as first_arri_date,\
-                        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time,\
-                           f.price as first_price\
-                from flight f\
-                    inner join airport as dep\
-                        on dep.id = f.departure\
-                    join airport as dest\
-                        on dest.id = f.destination\
-                where dep.location = '%s'\
-            )  as A\
-            inner join\
-            (\
-                select f.flight_number as sec_flight_num, dep.location as sec_dep, dest.location as sec_dest,\
-                        f.departure_date as sec_dep_date, f.arrival_date as sec_arri_date,\
-                    sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                         convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as sec_flight_time,\
-                       f.price as sec_price\
-                from flight f\
-                    inner join airport as dep\
-                        on dep.id = f.departure\
-                    join airport as dest\
-                        on dest.id = f.destination\
-             ) as B\
-                on A.first_dest = B.sec_dep \
-                    and timestampdiff(hour, A.first_arri_date, B.sec_dep_date) >= 2\
-            ) as C\
-            inner join\
-            (\
-                select f.flight_number as thr_flight_num, dep.location as thr_dep, dest.location as thr_dest,\
-                        f.departure_date as thr_dep_date, f.arrival_date as thr_arri_date,\
-                    sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'),\
-                                                         convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as thr_flight_time,\
-                       f.price as thr_price\
-                from flight f\
-                    inner join airport as dep\
-                        on dep.id = f.departure\
-                    join airport as dest\
-                        on dest.id = f.destination\
-                where dest.location = '%s'\
-            ) as D\
-            on C.sec_dest = D.thr_dep\
-                and timestampdiff(hour, C.sec_arri_date, D.thr_dep_date) >= 2\
-        ) as E\
-    )\
-) as F order by %s %s"\
-%(depart_abbre, dest_abbre, dest_abbre, dest_abbre, depart_abbre, dest_abbre, orderby, asc))
+        query = "select * from \
+( \
+    ( \
+    select f.flight_number as first_flight_num, dep.name as first_dep, dest.name as first_dest, \
+            f.departure_date as first_dep_date, f.arrival_date as first_arri_date, \
+        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                    convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, \
+            NULL as sec_flight_num, NULL as sec_dep, NULL as sec_dest, NULL as sec_dep_date, NULL as sec_dest_date, NULL as sec_flight_time, \
+            NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time, \
+        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as flight_time, \
+            0 as trans_time, f.price as price, f.arrival_date as final_date \
+    from flight f  \
+        inner join airport as dep  \
+            on dep.id = f.departure \
+        join airport as dest \
+            on dest.id = f.destination \
+    where dep.name = '%s' \
+        and dest.name = '%s' \
+    ) \
+    union \
+    ( \
+    select A.first_flight_num, A.first_dep , A.first_dest, A.first_dep_date, A.first_arri_date, A.first_flight_time,  \
+        B.sec_flight_num, B.sec_dep, B.sec_dest, B.sec_dep_date, B.sec_arri_date, B.sec_flight_time, \
+        NULL as thr_flight_num, NULL as thr_dep, NULL as thr_dest, NULL as thr_dep_date, NULL as thr_dest_date, NULL as thr_flight_time, \
+        addtime(first_flight_time, sec_flight_time) as flight_time, \
+        sec_to_time(timestampdiff(second, A.first_arri_date, B.sec_dep_date)) as trans_time, \
+        (A.price + B.price) * 0.9 as price, B.sec_arri_date as final_date \
+    from \
+        ( \
+        select f.flight_number as first_flight_num, dep.name as first_dep, dest.name as first_dest, \
+                f.departure_date as first_dep_date, f.arrival_date as first_arri_date, \
+            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, f.price as price \
+        from flight f  \
+            inner join airport as dep \
+                on dep.id = f.departure \
+            join airport as dest \
+                on dest.id = f.destination \
+        where dep.name = '%s' \
+        )  as A \
+    inner join \
+    ( \
+        select f.flight_number as sec_flight_num, dep.name as sec_dep, dest.name as sec_dest, \
+                f.departure_date as sec_dep_date, f.arrival_date as sec_arri_date, \
+            sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                 convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as sec_flight_time, f.price as price \
+        from flight f  \
+            inner join airport as dep \
+                on dep.id = f.departure \
+            join airport as dest \
+                on dest.id = f.destination \
+        where dest.name = '%s' \
+    ) as B \
+    on A.first_dest = B.sec_dep \
+        and timestampdiff(hour, A.first_arri_date, B.sec_dep_date) >= 2 \
+    ) \
+    union \
+    ( \
+    select first_flight_num, E.first_dep , E.first_dest, E.first_dep_date, E.first_arri_date, E.first_flight_time,  \
+        sec_flight_num, E.sec_dep, E.sec_dest, E.sec_dep_date, E.sec_arri_date, E.sec_flight_time, \
+        thr_flight_num, E.thr_dep, E.thr_dest, E.thr_dep_date, E.thr_arri_date, E.thr_flight_time, \
+        addtime(addtime(first_flight_time, sec_flight_time), thr_flight_time) as flight_time, \
+        addtime(first_trans_time, sec_trans_time) as trans_time, \
+        (first_price + sec_price + thr_price) * 0.8 as price, thr_arri_date as final_date \
+    from \
+    ( \
+        select C.*, D.*, sec_to_time(timestampdiff(second, C.sec_arri_date, D.thr_dep_date)) as sec_trans_time \
+        from \
+        (    \
+            select *, sec_to_time(timestampdiff(second, A.first_arri_date, B.sec_dep_date)) as first_trans_time from  \
+            (    \
+                select f.flight_number as first_flight_num, dep.name as first_dep, dest.name as first_dest, \
+                            f.departure_date as first_dep_date, f.arrival_date as first_arri_date, \
+                        sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                             convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as first_flight_time, \
+                           f.price as first_price \
+                from flight f  \
+                    inner join airport as dep \
+                        on dep.id = f.departure \
+                    join airport as dest \
+                        on dest.id = f.destination \
+                where dep.name = '%s' \
+            )  as A \
+            inner join \
+            ( \
+                select f.flight_number as sec_flight_num, dep.name as sec_dep, dest.name as sec_dest, \
+                        f.departure_date as sec_dep_date, f.arrival_date as sec_arri_date, \
+                    sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                         convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as sec_flight_time, \
+                       f.price as sec_price \
+                from flight f  \
+                    inner join airport as dep \
+                        on dep.id = f.departure \
+                    join airport as dest \
+                        on dest.id = f.destination \
+             ) as B \
+                on A.first_dest = B.sec_dep  \
+                    and timestampdiff(hour, A.first_arri_date, B.sec_dep_date) >= 2 \
+                    and B.sec_dest != '%s'  \
+            ) as C \
+            inner join \
+            ( \
+                select f.flight_number as thr_flight_num, dep.name as thr_dep, dest.name as thr_dest, \
+                        f.departure_date as thr_dep_date, f.arrival_date as thr_arri_date, \
+                    sec_to_time(timestampdiff(second, convert_tz(f.departure_date, dep.timezone, '+00:00'), \
+                                                         convert_tz(f.arrival_date, dest.timezone, '+00:00'))) as thr_flight_time, \
+                       f.price as thr_price \
+                from flight f  \
+                    inner join airport as dep \
+                        on dep.id = f.departure \
+                    join airport as dest \
+                        on dest.id = f.destination \
+                where dest.name = '%s' \
+            ) as D \
+            on C.sec_dest = D.thr_dep \
+                and timestampdiff(hour, C.sec_arri_date, D.thr_dep_date) >= 2 \
+        ) as E \
+    ) \
+) as F order by %s %s" %(depart, dest, depart, dest, depart, depart, dest, orderby, asc)
+        cursor.execute(query)
 
     data = cursor.fetchall()
     db.close()

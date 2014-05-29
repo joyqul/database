@@ -35,15 +35,31 @@
                 <form action="/database/flight/ticket" method="post">
                     <label><h2>From</h2></label>
                     <select name="depart">
+                    % country = search[0][1]
+                        <optgroup label="{{country}}">
                         % for place in search:
+                            % if place[1] != country:
+                                % country = place[1]
+                                </optgroup>
+                                <optgroup label="{{country}}">
+                            % end
                             <option>{{place[0]}}</option>
                         % end
+                        </optgroup>
                     </select>
                     <label><h2>Arrive at</h2></label>
                     <select name="dest">
+                    % country = search[0][1]
+                        <optgroup label="{{country}}">
                         % for place in search:
+                            % if place[1] != country:
+                                % country = place[1]
+                                </optgroup>
+                                <optgroup label="{{country}}">
+                            % end
                             <option>{{place[0]}}</option>
                         % end
+                        </optgroup>
                     </select>
                     <label><h2>Transit</h2></label>
                     <select name="times">
@@ -57,6 +73,7 @@
                     <select name="orderby">
                         <option>Price</option>
                         <option>Arrival time</option>
+                        <option>Departure time</option>
                         <option>Transfer time</option>
                     </select>
                     <label><h2>In</h2></label>
@@ -66,6 +83,13 @@
                     </select>
                     <label><h2>ways</h2></label>
                     <input type="submit" name="search" value="Search">
+                    </br>
+                    <label>
+                    <div id="checkbox_round"> 
+                        <input name="is_round" type="checkbox" id="checkbox_roundInput">
+                        <label for="checkbox_roundInput"></label>
+                    </div>
+                    </label>
                 </form>
             <br>
             </div>
