@@ -119,141 +119,125 @@ Homework 4
 ---
 
 1. Brief introduction 
-1.1 This homework is the extension of hw3.
+	- This homework is the extension of hw3.
 
-1.2 Table schema adjustment.(See part2 for details.)
+	- Table schema adjustment.(See part2 for details.)
 
-1.3 Add new Entity: Country that has attrubutes  attributes “abbreviation” and “fullname”. 
+	- Add new Entity: Country that has attrubutes  attributes “abbreviation” and “fullname”. 
 
-1.4 Add “belonging Country”, “full name”, and “Timezone” attributes into airport information. 
+	- Add “belonging Country”, “full name”, and “Timezone” attributes into airport information. 
 
-1.5 Two new features for administrator (see part 4 for details) 
-	a. Country list management 
-	b. Airport management: refer to 4.2 
-	
-1.6 New feature: Ticket searching (see part 3 for details) 
+	- Two new features for administrator (see part 4 for details) 
+		- Country list management 
+		- Airport management: refer to 4.2 
+		
+	- New feature: Ticket searching (see part 3 for details) 
 
 2. Table schema adjustment 
-2.1 All tables are required to be normalized by the Third normal form(3NF) 
+	- All tables are required to be normalized by the Third normal form(3NF) 
 
-2.2 The definition of arrival/departure time in flights 
- -The timezone of departure time is the departure airport’s timezone; 
-	The timezone of arrival time is the destination airport’s timezone. 
+	- The definition of arrival/departure time in flights 
+	 -The timezone of departure time is the departure airport’s timezone; 
+		The timezone of arrival time is the destination airport’s timezone. 
 
 3. Ticket searching 
-3.1 Tickets 
-	-There may be more than one flights during the trip from A to B. 
-	-Transfers are needed for a trip with more than 1 flight.
-
-3.2 User restriction 
-	-Guest can search the ticket information without logging in. 
-
-3.3 Searching 
-	-Find out all the qualified ticket with the given condition: Departure airport full name, 
-	 destination airport full name, and the upper limit of transfer time. 
-  
-	-Sort the airport list by country 
-	
-	-Transfer times can be chosen: No transfer, No more than 1, No more than 2 
-
-
-3.4 Search result  
-	-you need to display the following infomation 
-
-		-Flight number
-		-Abbreviation of departure airport 
- 		-Abbreviation of destination airport 
-		-Departure time(local time) 
-		-Arrival time(local time) 
-		-Flight time 
-			-Please take the time difference into account.
-			(Hint: you may convert the timezone of arrival time into departure airport’s timezone, 
-			and subtract it with departure time) 
-
-		-You should display the flight information(including flight no, abbreviation of departure/destination airport, 
-		departure/arrival time, flight time) of each transit flight in the connecting flight. 
-
-		-Transfer time(there is no time difference problem to be concerned) Please refer to part 3.5)
+	- Tickets 
+		-There may be more than one flights during the trip from A to B. 
+		-Transfers are needed for a trip with more than 1 flight.
+	- User restriction 
+		-Guest can search the ticket information without logging in. 
+	- Searching 
+		-Find out all the qualified ticket with the given condition: Departure airport full name, 
+		 destination airport full name, and the upper limit of transfer time. 
+	  
+		-Sort the airport list by country 
 		
-		-Price (Please refer to part 3.5)
+		-Transfer times can be chosen: No transfer, No more than 1, No more than 2 
+	- Search result  
+		-you need to display the following infomation 
+			-Flight number
+			-Abbreviation of departure airport 
+	 		-Abbreviation of destination airport 
+			-Departure time(local time) 
+			-Arrival time(local time) 
+			-Flight time 
+				-Please take the time difference into account.
+				(Hint: you may convert the timezone of arrival time into departure airport’s timezone, 
+				and subtract it with departure time) 
 
-		-Order 
-			-Order by price  
-			-Order by departure time 
-			-Order by arrival time 
+				-You should display the flight information(including flight no, abbreviation of departure/destination airport, 
+				departure/arrival time, flight time) of each transit flight in the connecting flight. 
 
+			-Transfer time(there is no time difference problem to be concerned) Please refer to part 3.5)
+			
+			-Price (Please refer to part 3.5)
 
+			-Order 
+				-Order by price  
+				-Order by departure time 
+				-Order by arrival time 
 
+	- Transfer 
+		-Airline companies may split a long-term journey into multiple short-term journey. 
+			-For example, Taiwan to UK can be split into Taiwan to HongKong, than HongKong to UK. 
+	 	-Transfer times is no more than twice. 
+	 
+		-Tourist may get discount of tickets as the time of transfer goes up: 
+			-Direct flight: No discount 
+			-Transfer once: 
+				10% off for the total price of two flights 
+			-Transfer twice: 
+				20% off for the total price of three flights 
 
-3.5 Transfer 
-	-Airline companies may split a long-term journey into multiple short-term journey. 
-		-For example, Taiwan to UK can be split into Taiwan to HongKong, than HongKong to UK. 
- 	-Transfer times is no more than twice. 
- 
-	-Tourist may get discount of tickets as the time of transfer goes up: 
-		-Direct flight: No discount 
-		-Transfer once: 
-			10% off for the total price of two flights 
-		-Transfer twice: 
-			20% off for the total price of three flights 
-
-	-There is at least two-hour layover between two flights. 
-
-
-3.6 Restrictions on Implementations 
-	-The computation of following attributes is required to be computed by Date/Time functions in SQL (reference) 
-		-Flight time  
-		-Transfer time 
-	
-	-Use only ONE SQL command during the whole transfer process. Sorting in other programming language or 
-	use more than one SQL command is not allowed. In other words, you should query all the matched direct flights 
-	or connecting flights information including flight id, total flight time, overall price (discounted) 
-	and total transfer time in ONE SQL command. However, the individual departure/arrival date, departure/arrival airport, 
-	flight time and transfer time in the connecting flight is not constrained. 
-		-The following hints are for reference, not requirement:
-		SELECT flight id1, flight id2, flight id3,Arrival time1, Transfer time1, price1 
-		FROM ( SQL of direct flight UNION SQL of transfer once2 UNION SQL of transfer twice2 )3 AS TransferTable 
-		ORDER BY price / arrival time / transfer time  
-			-1: You may use “CASE WHEN” to select results according to different value. 
-			Here is the example: 
-			CASE WHEN {condition} THEN {value} WHEN {condition} THEN {value} ELSE {value} END 
- 			-2:You may use “JOIN” in the transfer SQL  
-			-3: You can only use UNION when the number of columns for each SQL are the same. You may 
-			“SELECT NULL AS columName” to fill the empty column. 
-			For example, there will be no flight id2 and flight id3 in SQL of direct flight. 
-			You may SELECT NULL for them. 
-			Date time related function in SQL: (reference) 
+		-There is at least two-hour layover between two flights. 
+	- Restrictions on Implementations 
+		-The computation of following attributes is required to be computed by Date/Time functions in SQL (reference) 
+			-Flight time  
+			-Transfer time 	
+		-Use only ONE SQL command during the whole transfer process. Sorting in other programming language or 
+		use more than one SQL command is not allowed. In other words, you should query all the matched direct flights 
+		or connecting flights information including flight id, total flight time, overall price (discounted) 
+		and total transfer time in ONE SQL command. However, the individual departure/arrival date, departure/arrival airport, 
+		flight time and transfer time in the connecting flight is not constrained. 
+			-The following hints are for reference, not requirement:
+			SELECT flight id1, flight id2, flight id3,Arrival time1, Transfer time1, price1 
+			FROM ( SQL of direct flight UNION SQL of transfer once2 UNION SQL of transfer twice2 )3 AS TransferTable 
+			ORDER BY price / arrival time / transfer time  
+			- You may use “CASE WHEN” to select results according to different value. 
+				Here is the example: 
+				CASE WHEN {condition} THEN {value} WHEN {condition} THEN {value} ELSE {value} END 
+	 		- You may use “JOIN” in the transfer SQL  
+			- You can only use UNION when the number of columns for each SQL are the same. You may 
+				“SELECT NULL AS columName” to fill the empty column. 
+				For example, there will be no flight id2 and flight id3 in SQL of direct flight. 
+				You may SELECT NULL for them. 
+				Date time related function in SQL: (reference) 
 
 4.Administrator 
-
-4.1 Country list management 
-	-List the countries 
-	 
-	-Add new country 
-		-The format of the abbreviation of a country will only have three capital letters (ex: TWN). 
-	-Full name 
-	-Edit 
-		-You can edit the abbreviation and full name of a country. 
-	-Deletion 
- 		-The corresponding information about country should be removed once the country was deleted. 
-
-4.2 Airport management 
-	-Add new attributes to airport  
-		-Belonging country (Implement by foreign key )
-	-Full name  
-	-Timezone, ex: +08:00 
+	- Country list management 
+		-List the countries 	 
+		-Add new country 
+			-The format of the abbreviation of a country will only have three capital letters (ex: TWN). 
+		-Full name 
+		-Edit 
+			-You can edit the abbreviation and full name of a country. 
+		-Deletion 
+	 		-The corresponding information about country should be removed once the country was deleted. 
+	- Airport management 
+		-Add new attributes to airport  
+			-Belonging country (Implement by foreign key )
+		-Full name  
+		-Timezone, ex: +08:00 
 
 5. Bonus 
-5.1 Round-trip tickets
-5.2 Overnight / Not overnight options in Transfer
-  -You should define what is overnight in your report 
-		Ex. Transfer time in one transit airport is larger than 12 hours 
-5.3 The total time of the journey 
-	-total time of the journey = total transfer time + total flight time 
-
-	-The result of search can sort by ”total journey time”, “total flight time” or “total transfer time”. 
-5.4 Comparison sheet 
-	-Comparison sheet modification: add a ticket into it instead of a flight. 
-
-	-Only Logged-in user can add ticket into comparison sheet during their searching. 
-5.5 Other 
+	- Round-trip tickets
+	- Overnight / Not overnight options in Transfer
+	  -You should define what is overnight in your report 
+			Ex. Transfer time in one transit airport is larger than 12 hours 
+	- The total time of the journey 
+		-total time of the journey = total transfer time + total flight time 
+		-The result of search can sort by ”total journey time”, “total flight time” or “total transfer time”. 
+	- Comparison sheet 
+		-Comparison sheet modification: add a ticket into it instead of a flight. 
+		-Only Logged-in user can add ticket into comparison sheet during their searching. 
+	- Other 
